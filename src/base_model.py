@@ -1,5 +1,5 @@
 import keras
-from DataGenerator import DataGenerator
+from data_generator import DataGenerator
 
 class BaseModel:
 
@@ -26,8 +26,8 @@ class BaseModel:
             train_x = train_x[num_train*validation_size:]
             train_y = train_y[num_train*validation_size:]
 
-        train_gen = DataGenerator(train_x, train_y, batch_size, labels)
-        val_gen = DataGenerator(validation_x, validation_y, batch_size, labels)
+        train_gen = DataGenerator(train_x, train_y, batch_size, n_classes=labels)
+        val_gen = DataGenerator(validation_x, validation_y, batch_size, n_classes=labels)
 
         self.model.fit_generator(
             train_gen,
