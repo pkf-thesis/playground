@@ -1,4 +1,5 @@
 import keras
+from DataGenerator import DataGenerator
 
 class BaseModel:
 
@@ -16,8 +17,7 @@ class BaseModel:
         raise NotImplementedError
 
 
-    def train(self, train_x, train_y, batch_size=100, validation_size=0.1):
-
+    def train(self, train_x, train_y, epoch_size, labels, validation_size=0.1, batch_size=100):
         num_train = len(train_x)
 
         if validation_size != 0.0:
@@ -26,11 +26,13 @@ class BaseModel:
             train_x = train_x[num_train*validation_size:]
             train_y = train_y[num_train*validation_size:]
 
-        train_gen = batch_factory(train_x, batch_size, train_y)
-        val_gen = batch_factory(validation_x, batch_size, validation_y)
+        train_gen = DataGenerator(train_x, train_y, batch_size, labels)
+        val_gen = DataGenerator(validation_x, validation_y, batch_size, labels)
 
-        model.fit_generator(
+        self.model.fit_generator(
             train_gen,
-            steps_per_epoch= len(train_x) // batch_size,
-            validation_data= 
+            steps_per_epoch= num_train // batch_size,
+            validation_data= val_gen,
+            validation_steps=len(validation_x) // batch_size,
+            epochs=epoch_size
         )
