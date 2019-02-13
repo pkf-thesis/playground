@@ -8,7 +8,7 @@ import sqlite3
 #print (songTags.get("TRAAABD128F429CF47"))
 
 def database():
-    dbfile = "db/lastfm_tags.db"
+    dbfile = "../db/lastfm_tags.db"
 
     if not os.path.isfile(dbfile):
         print ('ERROR: db file %s does not exist' % dbfile)
