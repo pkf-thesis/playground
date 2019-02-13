@@ -1,11 +1,11 @@
 import numpy as np
 import keras
+import os
 
 class DataGenerator(keras.utils.Sequence):
-
-    def __init__(self, ids, labels, batch_size, dim, n_channels,
-                 n_classes, shuffle=True):
-        self.dim = dim
+    def __init__(self, ids, labels, batch_size=32, dim=(32,32,32), n_channels=1,
+                 n_classes=10, shuffle=True):
+        self.dim = np.load("../npys/"+os.listdir("../npys")[0]).shape
         self.batch_size = batch_size
         self.labels = labels
         self.ids = ids
@@ -39,6 +39,7 @@ class DataGenerator(keras.utils.Sequence):
 
     def __data_generation(self, ids_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
+
         # Initialization
         X = np.empty((self.batch_size, *self.dim, self.n_channels))
         y = np.empty((self.batch_size), dtype=int)
@@ -46,7 +47,7 @@ class DataGenerator(keras.utils.Sequence):
         # Generate data
         for i, id in enumerate(ids_temp):
             # Store sample
-            X[i,] = np.load('../npys/' + id)
+            X[i,] = np.load('../npys/' + id + '.npy')
 
             # Store class
             y[i] = self.labels[id]

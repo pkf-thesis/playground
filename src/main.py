@@ -12,7 +12,7 @@ if not os.path.exists("../npys"):
 
 'Initiate model with train data'
 model = Model()
-model.train(ids, labels)
+model.train(ids, labels, )
 
 'Evaluate model'
 (testIds, testLabels) = sql.load(test)
