@@ -4,7 +4,7 @@ import string
 import numpy as np
 import librosa
 
-def convert_files(path: string, feature_path: string, frequency: int, max_length: int):
+def convert_files(path, feature_path, frequency, max_length):
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith(".mp3"):
@@ -26,5 +26,3 @@ def convert_files(path: string, feature_path: string, frequency: int, max_length
 
                 print(len(y), save_name)
                 np.save(save_name, y)
-
-convert_files("../data", "../npys/", 22050, 640512)
