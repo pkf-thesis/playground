@@ -14,7 +14,7 @@ if not os.path.exists("../npys"):
 (train, test) = train_test_divider.splitData("../npys", 0.8)
 (train_x, train_y) = sql.fetchTagsFromSongs(train)
 
-'Initiate model with train data'
+'Initiate model and train'
 model = BaseModel()
 model.train(train_x, train_y, 10, 50)
 
