@@ -107,5 +107,5 @@ npys/
 
 # db
 db/*.db
-data/gtzan
-data/test
+data/gtzan/
+data/test/
