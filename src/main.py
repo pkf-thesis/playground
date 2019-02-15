@@ -4,6 +4,10 @@ import mp3_to_npy_convertor
 import train_test_divider
 import os
 
+from base_model import BaseModel
+from evaluator import Evaluator
+import sqllite_repository as sql
+
 if not os.path.exists("../npys"):
     mp3_to_npy_convertor.convert_files("../data", "../npys/", 22050, 640512)
 
@@ -11,9 +15,10 @@ if not os.path.exists("../npys"):
 (ids, labels) = sql.load(train)
 
 'Initiate model with train data'
-model = Model()
-model.train(ids, labels, )
+model = BaseModel()
+model.train(ids, labels, 10, 50)
 
 'Evaluate model'
+evaluator = Evaluator()
 (testIds, testLabels) = sql.load(test)
 evaluator.evaluate(model, testIds, testLabels)
