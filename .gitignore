@@ -106,5 +106,6 @@ venv.bak/
 npys/
 
 # db
-db/
-data/
+db/*.db
+data/gtzan
+data/test
