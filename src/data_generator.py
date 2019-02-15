@@ -2,10 +2,13 @@ import numpy as np
 import keras
 import os
 
+genres = {'classical':0, 'pop':1, 'blues':2, 'country':3, 'disco': 4, 'hiphop': 5,
+          'jazz':6, 'metal':7, 'reggae':8, 'rock':9}
+
 class DataGenerator(keras.utils.Sequence):
-    def __init__(self, ids, labels, batch_size=32, dim=(32,32,32), n_channels=1,
+    def __init__(self, ids, labels, batch_size=32, dim=(640512,), n_channels=1,
                  n_classes=10, shuffle=True):
-        self.dim = np.load("../npys/"+os.listdir("../npys")[0]).shape
+        self.dim = dim
         self.batch_size = batch_size
         self.labels = labels
         self.ids = ids
@@ -47,9 +50,11 @@ class DataGenerator(keras.utils.Sequence):
         # Generate data
         for i, id in enumerate(ids_temp):
             # Store sample
-            X[i,] = np.load('../npys/' + id)
+            x = np.load('../npys/' + id)
+            x = x.reshape((-1, 1))
+            X[i, ] = x
 
             # Store class
-            y[i] = self.labels[id]
+            y[i] = genres[self.labels[i]]
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)

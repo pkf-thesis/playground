@@ -34,4 +34,6 @@ class Simple1DCNN(BaseModel):
         model.add(Flatten())
         model.add(Dense(labels, activation='softmax'))
 
+        model.summary()
+
         return model

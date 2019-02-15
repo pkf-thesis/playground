@@ -16,7 +16,7 @@ shape = numpy.load("../npys/"+os.listdir("../npys")[0]).shape
 print(shape)
 
 'Initiate model and train'
-model = Simple1DCNN((640512, 1), len(train_y))
+model = Simple1DCNN((640512, 1), 10)
 model.train(train_x, train_y, 10, 10)
 
 'Evaluate model'
