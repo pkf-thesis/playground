@@ -1,4 +1,4 @@
-from models.base_model import BaseModel
+from src.models.base_model import BaseModel
 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -8,6 +8,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.layers import BatchNormalization
+
 
 class Simple2DCNN(BaseModel):
 

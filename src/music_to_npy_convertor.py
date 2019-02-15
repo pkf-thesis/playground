@@ -1,8 +1,8 @@
-import os, glob
-import string
+import os
 
 import numpy as np
 import librosa
+
 
 def convert_files(path, feature_path, frequency, max_length):
     for root, dirs, files in os.walk(path):

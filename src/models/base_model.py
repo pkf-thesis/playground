@@ -1,5 +1,5 @@
 import keras
-from data_generator import DataGenerator
+from src.data_generator import DataGenerator
 
 class BaseModel:
 
@@ -7,24 +7,22 @@ class BaseModel:
 
         self.model = self.build_model(input_shape, num_lables)
 
+    def build_model(self, input_shape, num_lables):
+        raise NotImplementedError
+
+    def train(self, train_x, train_y, epoch_size, labels, validation_size=0.1, batch_size=100):
         self.model.compile(
             loss=keras.losses.categorical_crossentropy,
             optimizer=keras.optimizers.Adam(),
             metrics=['accuracy'])
-    
 
-    def build_model(self, input_shape, num_lables):
-        raise NotImplementedError
-
-
-    def train(self, train_x, train_y, epoch_size, labels, validation_size=0.1, batch_size=100):
         num_train = len(train_x)
 
         if validation_size != 0.0:
-            validation_x = train_x[:num_train*validation_size]
-            validation_y = train_y[:num_train*validation_size]
-            train_x = train_x[num_train*validation_size:]
-            train_y = train_y[num_train*validation_size:]
+            validation_x = train_x[:int(num_train*validation_size)]
+            validation_y = train_y[:int(num_train*validation_size)]
+            train_x = train_x[int(num_train*validation_size):]
+            train_y = train_y[int(num_train*validation_size):]
 
         train_gen = DataGenerator(train_x, train_y, batch_size, n_classes=labels)
         val_gen = DataGenerator(validation_x, validation_y, batch_size, n_classes=labels)
