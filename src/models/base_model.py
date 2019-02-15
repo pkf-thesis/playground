@@ -3,9 +3,9 @@ from data_generator import DataGenerator
 
 class BaseModel:
 
-    def __init__(self, *args):
+    def __init__(self, input_shape, num_lables):
 
-        self.model = self.build_model(*args)
+        self.model = self.build_model(input_shape, num_lables)
 
         self.model.compile(
             loss=keras.losses.categorical_crossentropy,
@@ -13,7 +13,7 @@ class BaseModel:
             metrics=['accuracy'])
     
 
-    def build_model(self, *args):
+    def build_model(self, input_shape, num_lables):
         raise NotImplementedError
 
 
