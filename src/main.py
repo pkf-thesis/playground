@@ -14,7 +14,7 @@ if not os.path.exists("../npys"):
 (train, test) = train_test_divider.splitData("../npys", 0.8)
 (ids, labels) = sql.load(train)
 
-'Initiate model with train data'
+'Initiate model and train'
 model = BaseModel()
 model.train(ids, labels, 10, 50)
 
