@@ -12,7 +12,7 @@ if not os.path.exists("../npys"):
     mp3_to_npy_convertor.convert_files("../data", "../npys/", 22050, 640512)
 
 (train, test) = train_test_divider.splitData("../npys", 0.8)
-(train_x, train_y) = sql.load(train)
+(train_x, train_y) = sql.fetchTagsFromSongs(train)
 
 'Initiate model with train data'
 model = BaseModel()
@@ -20,5 +20,5 @@ model.train(train_x, train_y, 10, 50)
 
 'Evaluate model'
 evaluator = Evaluator()
-(test_x, test_y) = sql.load(test)
+(test_x, test_y) = sql.fetchTagsFromSongs(test)
 evaluator.evaluate(model, test_x, test_y)
