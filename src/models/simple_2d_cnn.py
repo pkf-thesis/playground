@@ -1,4 +1,4 @@
-from base_model import BaseModel
+from models.base_model import BaseModel
 
 from keras.models import Sequential
 from keras.layers import Dense

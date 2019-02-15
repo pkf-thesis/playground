@@ -19,7 +19,7 @@ def deleteEverythingButTop50Tags():
     dbfile = database()
     conn = sqlite3.connect(dbfile)
 
-    sql = "SELECT tag, COUNT(tid) AS countTid FROM tid_tag GROUP BY tag ORDER BY countTid DESC LIMIT 10"
+    sql = "SELECT tag, COUNT(tid) AS countTid FROM tid_tag GROUP BY tag ORDER BY countTid DESC LIMIT 50"
     res = conn.execute(sql)
     data = res.fetchall()
 

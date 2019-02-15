@@ -7,10 +7,11 @@ import librosa
 def convert_files(path, feature_path, frequency, max_length):
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith(".mp3"):
-                save_name = feature_path + file.replace('.mp3', '')
-                file_name = os.path.join(root, file)
+            file_name = os.path.join(root, file)
 
+            if file.endswith(".au"):  
+                save_name = feature_path + file.replace('.au', '')
+            
                 if not os.path.exists(os.path.dirname(save_name)):
                     os.makedirs(os.path.dirname(save_name))
 
