@@ -16,12 +16,16 @@ class Simple2DCNN(BaseModel):
 
     def transform_data(self, ids_temp, batch_size, dim, n_channels):
 
+        batch_size = 20*batch_size
+
         # Initialization
         X = np.empty((batch_size, *dim, n_channels))
         y = np.empty(batch_size, dtype=int)
 
+        count = 0
         # Generate data
-        for i, id in enumerate(ids_temp):
+        for i in enumerate(batch_size):
+            id = ids_temp[i]
             x = np.load('../npys/' + id)
             genre = id.split('.')[0]
 
@@ -34,19 +38,18 @@ class Simple2DCNN(BaseModel):
                 mel_spectogram = librosa.feature.melspectrogram(song, n_fft=1024, hop_length=512)[:, :, np.newaxis]
                 mel_spectogram = np.array(list(mel_spectogram))
 
-                X[i, ] = mel_spectogram
-                y[i] = gtzan.genres[genre]
+                X[count, ] = mel_spectogram
+                y[count] = gtzan.genres[genre]
+
+                count += 1
 
         return X, y
 
     def build_model(self):
         model = Sequential()
 
-        input_shape = np.empty((*self.dimension, self.n_channels))
-        print(input_shape.shape)
-
         # First conv block
-        model.add(Conv2D(16, kernel_size=(3, 3), strides=(1, 1), activation='relu', input_shape=input_shape.shape))
+        model.add(Conv2D(16, kernel_size=(3, 3), strides=(1, 1), activation='relu', input_shape=self.input_shape))
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
         model.add(Dropout(0.25))
 

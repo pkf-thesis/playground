@@ -32,10 +32,8 @@ class Simple1DCNN(BaseModel):
     def build_model(self):
         model = Sequential()
 
-        input_shape = np.empty((*self.dimension, self.n_channels))
-        print(input_shape.shape)
         # First conv block
-        model.add(Conv1D(16, kernel_size=3, strides=1, activation='relu', input_shape=input_shape.shape))
+        model.add(Conv1D(16, kernel_size=3, strides=1, activation='relu', input_shape=self.input_shape))
         model.add(MaxPooling1D(pool_size=2, strides=2))
         model.add(Dropout(0.25))
 
