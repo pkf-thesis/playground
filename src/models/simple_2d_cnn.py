@@ -16,7 +16,7 @@ class Simple2DCNN(BaseModel):
 
     def transform_data(self, ids_temp, batch_size, dim, n_channels):
 
-        batch_size = 20*batch_size
+        batch_size = 19*batch_size
 
         # Initialization
         X = np.empty((batch_size, *dim, n_channels))
@@ -24,8 +24,7 @@ class Simple2DCNN(BaseModel):
 
         count = 0
         # Generate data
-        for i in enumerate(batch_size):
-            id = ids_temp[i]
+        for i, id in enumerate(ids_temp):
             x = np.load('../npys/' + id)
             genre = id.split('.')[0]
 

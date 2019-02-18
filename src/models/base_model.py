@@ -44,10 +44,12 @@ class BaseModel:
         val_gen = DataGenerator(self.transform_data, validation_x, validation_y, batch_size,
                                 dim=self.dimension, n_classes=self.num_labels)
 
+        num_train = len(train_x)
+
         self.model.fit_generator(
             train_gen,
-            steps_per_epoch= num_train // batch_size,
-            validation_data= val_gen,
+            steps_per_epoch=num_train // batch_size,
+            validation_data=val_gen,
             validation_steps=len(validation_x) // batch_size,
             epochs=epoch_size
         )
