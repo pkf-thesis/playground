@@ -8,8 +8,7 @@ from evaluator import Evaluator
 import sqllite_repository as sql
 
 if not os.path.exists("../npys"):
-    music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 64000)
-    music_to_npy_convertor.convert_files("../data/gtzan_small/", "../npys/", 22050, 640512)
+    music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 640512)
 
 'Split data into train and test'
 (train_x, train_y, test_x, test_y) = train_test_divider.splitData("../npys", 0.8)
