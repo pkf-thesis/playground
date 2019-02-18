@@ -14,7 +14,7 @@ class Simple1DCNN(BaseModel):
 
     def transform_data(self, ids_temp):
         # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels))
+        X = np.empty((self.batch_size, *self.dimension, self.n_channels))
         y = np.empty(self.batch_size, dtype=int)
 
         # Generate data
@@ -29,11 +29,13 @@ class Simple1DCNN(BaseModel):
 
         return X, y
 
-    def build_model(self, input_shape, labels):
+    def build_model(self):
         model = Sequential()
 
+        input_shape = np.empty((*self.dimension, self.n_channels))
+        print(input_shape.shape)
         # First conv block
-        model.add(Conv1D(16, kernel_size=3, strides=1, activation='relu', input_shape=input_shape))
+        model.add(Conv1D(16, kernel_size=3, strides=1, activation='relu', input_shape=input_shape.shape))
         model.add(MaxPooling1D(pool_size=2, strides=2))
         model.add(Dropout(0.25))
 

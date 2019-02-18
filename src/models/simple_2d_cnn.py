@@ -39,11 +39,14 @@ class Simple2DCNN(BaseModel):
 
         return X, y
 
-    def build_model(self, input_shape, labels):
+    def build_model(self):
         model = Sequential()
 
+        input_shape = np.empty((*self.dimension, self.n_channels))
+        print(input_shape.shape)
+
         # First conv block
-        model.add(Conv2D(16, kernel_size=(3, 3), strides=(1, 1), activation='relu', input_shape=(128, 126, 1)))
+        model.add(Conv2D(16, kernel_size=(3, 3), strides=(1, 1), activation='relu', input_shape=input_shape.shape))
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
         model.add(Dropout(0.25))
 
@@ -69,7 +72,7 @@ class Simple2DCNN(BaseModel):
 
         # MLP
         model.add(Flatten())
-        model.add(Dense(labels, activation='softmax'))
+        model.add(Dense(self.num_labels, activation='softmax'))
 
         return model
 

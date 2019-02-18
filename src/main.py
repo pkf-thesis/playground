@@ -8,7 +8,7 @@ from evaluator import Evaluator
 import sqllite_repository as sql
 
 if not os.path.exists("../npys"):
-    music_to_npy_convertor.convert_files("../data/gtzan_small/", "../npys/", 22050, 64000)
+    music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 64000)
 
 (train_x, test) = train_test_divider.splitData("../npys", 1)
 train_y = list(map(lambda id: id.split(".")[0], train_x))
@@ -16,7 +16,7 @@ train_y = list(map(lambda id: id.split(".")[0], train_x))
 #print(shape)
 
 'Initiate model and train'
-model = Simple2DCNN((128, 126), 10)
+model = Simple2DCNN((128, 126), 1, 10)
 # model = Simple1DCNN((64000, 1), 10)
 model.train(train_x, train_y, 10, 10)
 
