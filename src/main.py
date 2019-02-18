@@ -13,11 +13,9 @@ if not os.path.exists("../npys"):
 'Split data into train and test'
 (train_x, train_y, test_x, test_y) = train_test_divider.splitData("../npys", 0.8)
 
-shape = numpy.load("../npys/"+os.listdir("../npys")[0]).shape
-print(shape)
-
 'Initiate model and train'
-model = Simple1DCNN((64000, 1), 10)
+model = Simple2DCNN((128, 126), 10)
+# model = Simple1DCNN((64000, 1), 10)
 model.train(train_x, train_y, 10, 10)
 
 'Evaluate model'

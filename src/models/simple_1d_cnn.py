@@ -1,16 +1,33 @@
 from models.base_model import BaseModel
+import utils.gtzan_genres as gtzan
+
+import numpy as np
 
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.layers import Activation
 from keras.layers import Conv1D
 from keras.layers import MaxPooling1D
 from keras.layers import Dropout
 from keras.layers import Flatten
-from keras.layers import BatchNormalization
-
 
 class Simple1DCNN(BaseModel):
+
+    def transform_data(self, ids_temp):
+        # Initialization
+        X = np.empty((self.batch_size, *self.dim, self.n_channels))
+        y = np.empty(self.batch_size, dtype=int)
+
+        # Generate data
+        for i, id in enumerate(ids_temp):
+            # Store sample
+            x = np.load('../npys/' + id)
+            x = x.reshape((-1, 1))
+            X[i, ] = x
+
+            # Store class
+            y[i] = gtzan.genres[self.labels[i]]
+
+        return X, y
 
     def build_model(self, input_shape, labels):
         model = Sequential()
@@ -33,7 +50,5 @@ class Simple1DCNN(BaseModel):
         # MLP
         model.add(Flatten())
         model.add(Dense(labels, activation='softmax'))
-
-        model.summary()
 
         return model
