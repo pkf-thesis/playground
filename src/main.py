@@ -9,11 +9,10 @@ import sqllite_repository as sql
 
 if not os.path.exists("../npys"):
     music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 64000)
+    music_to_npy_convertor.convert_files("../data/gtzan_small/", "../npys/", 22050, 640512)
 
-(train_x, test) = train_test_divider.splitData("../npys", 1)
-train_y = list(map(lambda id: id.split(".")[0], train_x))
-#shape = numpy.load("../npys/"+os.listdir("../npys")[0]).shape
-#print(shape)
+'Split data into train and test'
+(train_x, train_y, test_x, test_y) = train_test_divider.splitData("../npys", 0.8)
 
 'Initiate model and train'
 model = Simple2DCNN((128, 126), 1, 10)
