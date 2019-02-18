@@ -12,11 +12,12 @@ if not os.path.exists("../npys"):
 
 (train_x, test) = train_test_divider.splitData("../npys", 1)
 train_y = list(map(lambda id: id.split(".")[0], train_x))
-shape = numpy.load("../npys/"+os.listdir("../npys")[0]).shape
-print(shape)
+#shape = numpy.load("../npys/"+os.listdir("../npys")[0]).shape
+#print(shape)
 
 'Initiate model and train'
-model = Simple1DCNN((64000, 1), 10)
+model = Simple2DCNN((128, 126), 10)
+# model = Simple1DCNN((64000, 1), 10)
 model.train(train_x, train_y, 10, 10)
 
 'Evaluate model'
