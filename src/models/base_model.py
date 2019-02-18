@@ -1,5 +1,5 @@
 import keras
-from src.data_generator import DataGenerator
+from data_generator import DataGenerator
 
 class BaseModel:
 

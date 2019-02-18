@@ -6,7 +6,7 @@ genres = {'classical':0, 'pop':1, 'blues':2, 'country':3, 'disco': 4, 'hiphop': 
           'jazz':6, 'metal':7, 'reggae':8, 'rock':9}
 
 class DataGenerator(keras.utils.Sequence):
-    def __init__(self, ids, labels, batch_size=32, dim=(640512,), n_channels=1,
+    def __init__(self, ids, labels, batch_size=32, dim=(64000,), n_channels=1,
                  n_classes=10, shuffle=True):
         self.dim = dim
         self.batch_size = batch_size

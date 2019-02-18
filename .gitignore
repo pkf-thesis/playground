@@ -109,3 +109,4 @@ npys/
 db/*.db
 data/gtzan/
 data/test/
+data/gtzan_small/
