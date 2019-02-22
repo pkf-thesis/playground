@@ -58,7 +58,7 @@ def deleteZeroVals(dbfile):
     conn = sqlite3.connect(dbfile)
     cursor = conn.cursor()
 
-    sql = "DELETE FROM tid_tag WHERE val == '0.0'"
+    sql = "DELETE FROM tid_tag WHERE val = '0.0'"
     cursor.execute(sql)
 
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
@@ -109,9 +109,9 @@ def joinMetaData(lastfm, metadata):
 lastfm = readDatabase("../db/lastfm_tags.db")
 metadata = "../db/track_metadata.db"
 
+deleteZeroVals(lastfm)
 deleteNonMusicRelatedTags(lastfm)
 deleteEverythingButTop50Tags(lastfm)
-deleteZeroVals(lastfm)
 vacuum(lastfm)
 createTable(lastfm)
 joinMetaData(lastfm, metadata)
