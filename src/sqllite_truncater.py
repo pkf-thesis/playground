@@ -14,11 +14,11 @@ def deleteNonMusicRelatedTags(dbfile):
     conn = sqlite3.connect(dbfile)
     cursor = conn.cursor()
 
-    sql = "DELETE FROM tids WHERE tids.ROWID IN (SELECT tid FROM tid_tag WHERE tag IN (SELECT tags.ROWID FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british')))"
+    sql = "DELETE FROM tids WHERE id IN (SELECT tid FROM tid_tag WHERE tag IN (SELECT id FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british')))"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
-    sql = "DELETE FROM tid_tag WHERE tag IN (SELECT tags.ROWID FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british'))"
+    sql = "DELETE FROM tid_tag WHERE tag IN (SELECT id FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british'))"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
@@ -36,7 +36,7 @@ def deleteEverythingButTop50Tags(dbfile):
     conn = sqlite3.connect(dbfile)
     cursor = conn.cursor()
 
-    sql = "DELETE FROM tids WHERE tids.ROWID NOT IN (SELECT tid FROM tid_tag WHERE tag IN (SELECT tag FROM tid_tag GROUP BY tag ORDER BY COUNT(tid) DESC LIMIT 50))"
+    sql = "DELETE FROM tids WHERE id NOT IN (SELECT tid FROM tid_tag WHERE tag IN (SELECT tag FROM tid_tag GROUP BY tag ORDER BY COUNT(tid) DESC LIMIT 50))"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
@@ -44,7 +44,7 @@ def deleteEverythingButTop50Tags(dbfile):
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
-    sql = "DELETE FROM tags WHERE tags.ROWID NOT IN (SELECT tag FROM tid_tag GROUP BY tag ORDER BY COUNT(tid) DESC LIMIT 50)"
+    sql = "DELETE FROM tags WHERE id NOT IN (SELECT tag FROM tid_tag GROUP BY tag ORDER BY COUNT(tid) DESC LIMIT 50)"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
