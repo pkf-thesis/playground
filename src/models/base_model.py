@@ -20,7 +20,7 @@ class BaseModel:
         self.model = self.build_model()
         self.model.summary()
 
-        weight_name = 'best_weights_%s_%d.6f.hdf5' % (self.model_name, dimension)
+        weight_name = 'best_weights_%s_%s.6f.hdf5' % (self.model_name, dimension)
         self.check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto')
 
     def transform_data(self, data):

@@ -14,11 +14,11 @@ if not os.path.exists("../npys"):
 (train_x, train_y, test_x, test_y) = train_test_divider.splitData("../npys", 0.8)
 
 'Initiate model and train'
-model = Simple2DCNN(int(640512*0.1), (128, 126), 1, 10)
+base_model = Simple2DCNN(int(640512*0.1), (128, 126), 1, 10)
 # model = Simple1DCNN(640512, (640512), 1, 10)
-model.train(train_x, train_y, epoch_size=1, batch_size=5)
+base_model.train(train_x, train_y, epoch_size=1, batch_size=5)
 
 'Evaluate model'
 evaluator = Evaluator()
 #(test_x, test_y) = sql.fetchTagsFromSongs(test)
-evaluator.evaluate(model, test_x, test_y)
+evaluator.evaluate(base_model, test_x, test_y)
