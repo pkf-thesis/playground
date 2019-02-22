@@ -16,7 +16,7 @@ if not os.path.exists("../npys"):
 'Initiate model and train'
 model = Simple2DCNN(int(640512*0.1), (128, 126), 1, 10)
 # model = Simple1DCNN(640512, (640512), 1, 10)
-model.train(train_x, train_y, epoch_size=10, batch_size=5)
+model.train(train_x, train_y, epoch_size=1, batch_size=5)
 
 'Evaluate model'
 evaluator = Evaluator()

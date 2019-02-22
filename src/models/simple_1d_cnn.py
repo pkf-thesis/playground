@@ -10,7 +10,10 @@ from keras.layers import MaxPooling1D
 from keras.layers import Dropout
 from keras.layers import Flatten
 
+
 class Simple1DCNN(BaseModel):
+
+    name = "Simple1D_CNN"
 
     def transform_data(self, ids_temp):
         # Initialization
