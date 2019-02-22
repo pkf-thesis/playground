@@ -52,6 +52,20 @@ def deleteEverythingButTop50Tags(dbfile):
 
     conn.close()
 
+def deleteZeroVals(dbfile):
+    this_function_name = sys._getframe().f_code.co_name
+
+    conn = sqlite3.connect(dbfile)
+    cursor = conn.cursor()
+
+    sql = "DELETE FROM tid_tag WHERE val == '0.0'"
+    cursor.execute(sql)
+
+    print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
+
+    conn.commit()
+    conn.close()
+
 def vacuum(dbfile):
     this_function_name = sys._getframe().f_code.co_name
 
@@ -97,6 +111,7 @@ metadata = "../db/track_metadata.db"
 
 deleteNonMusicRelatedTags(lastfm)
 deleteEverythingButTop50Tags(lastfm)
+deleteZeroVals(lastfm)
 vacuum(lastfm)
 createTable(lastfm)
 joinMetaData(lastfm, metadata)
