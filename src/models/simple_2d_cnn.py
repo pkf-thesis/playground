@@ -14,6 +14,8 @@ from keras.layers import Flatten
 
 class Simple2DCNN(BaseModel):
 
+    name = "Simple2D_CNN"
+
     def transform_data(self, ids_temp, batch_size, dim, n_channels):
 
         batch_size = 19*batch_size

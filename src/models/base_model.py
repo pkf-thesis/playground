@@ -1,4 +1,5 @@
 import keras
+from keras.callbacks import ModelCheckpoint
 import numpy as np
 from data_generator import DataGenerator
 
@@ -6,6 +7,8 @@ from data_generator import DataGenerator
 class BaseModel:
 
     def __init__(self, song_length, dimension, n_channels, num_labels):
+
+        self.model_name = NotImplemented  # type: str
 
         self.song_length = song_length # Length of the song to the network
 
@@ -16,6 +19,9 @@ class BaseModel:
 
         self.model = self.build_model()
         self.model.summary()
+
+        weight_name = 'best_weights_%s_%s.6f.hdf5' % (self.model_name, dimension)
+        self.check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto')
 
     def transform_data(self, data):
         raise NotImplementedError
@@ -48,6 +54,7 @@ class BaseModel:
 
         self.model.fit_generator(
             train_gen,
+            callbacks=[self.check_pointer],
             steps_per_epoch=num_train // batch_size,
             validation_data=val_gen,
             validation_steps=len(validation_x) // batch_size,
