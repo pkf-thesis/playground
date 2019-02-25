@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from models.base_model import BaseModel
 import utils.gtzan_genres as gtzan
 
@@ -14,14 +16,14 @@ from keras.layers import Flatten
 
 class Simple2DCNN(BaseModel):
 
-    name = "Simple2D_CNN"
+    model_name = "Simple2D_CNN"
 
-    def transform_data(self, ids_temp, batch_size, dim, n_channels):
+    def transform_data(self, ids_temp: List[str], batch_size: int) -> Tuple[np.array, np.array]:
 
-        batch_size = 19*batch_size
+        batch_size = 19 * batch_size
 
         # Initialization
-        X = np.empty((batch_size, *dim, n_channels))
+        X = np.empty((batch_size, *self.dimension, self.n_channels))
         y = np.empty(batch_size, dtype=int)
 
         count = 0
@@ -76,7 +78,7 @@ class Simple2DCNN(BaseModel):
 
         # MLP
         model.add(Flatten())
-        model.add(Dense(self.num_labels, activation='softmax'))
+        model.add(Dense(self.n_labels, activation='softmax'))
 
         return model
 

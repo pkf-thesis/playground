@@ -13,7 +13,7 @@ from keras.layers import Flatten
 
 class Simple1DCNN(BaseModel):
 
-    name = "Simple1D_CNN"
+    model_name = "Simple1D_CNN"
 
     def transform_data(self, ids_temp):
         # Initialization

@@ -4,7 +4,7 @@ import numpy as np
 import librosa
 
 
-def convert_files(path, feature_path, frequency, max_length):
+def convert_files(path: str, feature_path: str, frequency: int, max_length: int) -> None:
     for root, dirs, files in os.walk(path):
         for file in files:
             file_name = os.path.join(root, file)
