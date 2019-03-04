@@ -14,15 +14,15 @@ def deleteNonMusicRelatedTags(dbfile):
     conn = sqlite3.connect(dbfile)
     cursor = conn.cursor()
 
-    sql = "DELETE FROM tids WHERE id IN (SELECT tid FROM tid_tag WHERE tag IN (SELECT id FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british')))"
+    sql = "DELETE FROM tids WHERE id IN (SELECT tid FROM tid_tag WHERE tag IN (SELECT id FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'favourite', 'Awesome', 'seen live', 'cool', 'british')))"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
-    sql = "DELETE FROM tid_tag WHERE tag IN (SELECT id FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british'))"
+    sql = "DELETE FROM tid_tag WHERE tag IN (SELECT id FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'favourite', 'Awesome', 'seen live', 'cool', 'british'))"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
-    sql = "DELETE FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'Awesome', 'seen live', 'cool', 'british')"
+    sql = "DELETE FROM tags WHERE tag IN ('Favourites', 'Favorite', 'favorites', 'favourite', 'Awesome', 'seen live', 'cool', 'british')"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
@@ -45,8 +45,14 @@ def deleteEverythingButTop50Tags(dbfile):
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
 
     sql = "DELETE FROM tags WHERE id NOT IN (SELECT tag FROM tid_tag GROUP BY tag ORDER BY COUNT(tid) DESC LIMIT 50)"
+    # sql = "SELECT id FROM tags WHERE id IN (SELECT tag FROM tid_tag GROUP BY tag ORDER BY COUNT(tid) DESC LIMIT 50)"
     cursor.execute(sql)
     print(str(this_function_name + ": records("+str(cursor.rowcount)+") deleted"))
+
+    rows = cursor.fetchall()
+ 
+    for row in rows:
+        print(row)
 
     conn.commit()
 
