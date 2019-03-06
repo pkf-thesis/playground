@@ -18,6 +18,8 @@ def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
 
     if args.d == 'gtzan':
         x_train, y_train, x_test, y_test = train_test_divider.split_data_sklearn("../npys", 0.2)
+    elif args.d == 'msd':
+
 
     return x_train, y_train, x_test, y_test
 
