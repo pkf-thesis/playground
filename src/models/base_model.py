@@ -74,5 +74,8 @@ class BaseModel(ABC):
             steps_per_epoch=num_train // batch_size,
             validation_data=val_gen,
             validation_steps=len(validation_x) // batch_size,
-            epochs=epoch_size
+            epochs=epoch_size,
+            workers=8,
+            use_multiprocessing=True,
+            max_queue_size=20
         )
