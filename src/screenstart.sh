@@ -5,3 +5,4 @@ if ! ps -ef | grep -v grep | grep $1 ; then
     screen -dmS $1 python main.py -d=gtzan -logging=../logs
     screen -list
 fi
+exit 0
