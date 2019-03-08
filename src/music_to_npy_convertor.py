@@ -13,6 +13,7 @@ def convert_files(path: str, feature_path: str, frequency: int, max_length: int)
                 save_name = feature_path + file.replace('.au', '')
             
                 if not os.path.exists(os.path.dirname(save_name)):
+                    print(os.path.dirname(save_name))
                     os.makedirs(os.path.dirname(save_name))
 
                 if os.path.isfile(save_name) == 1:

@@ -8,7 +8,7 @@ from data_generator import DataGenerator
 
 import datetime
 
-from src.utils import utils
+from utils import utils
 
 
 class BaseModel(ABC):

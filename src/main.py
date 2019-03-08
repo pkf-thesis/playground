@@ -2,6 +2,8 @@ from typing import List, Tuple
 
 import argparse
 import os
+import keras
+import tensorflow as tf
 
 import music_to_npy_convertor, train_test_divider
 from models.simple_1d_cnn import Simple1DCNN
@@ -10,6 +12,15 @@ from evaluator import Evaluator
 import utils.gtzan_genres as gtzan
 import sqllite_repository as sql
 
+from keras import backend as K
+K.tensorflow_backend._get_available_gpus()
+
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess = tf.Session(config=config)
+keras.backend.set_session(sess)
 
 def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
     """Split data into train and test"""
@@ -30,7 +41,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not os.path.exists("../npys"):
-        music_to_npy_convertor.convert_files("../data/small_gtzan/", "../npys/", 22050, 640512)
+        music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 640512)
 
     x_train, y_train, x_test, y_test = get_data(args)
 
