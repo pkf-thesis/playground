@@ -43,7 +43,7 @@ if __name__ == '__main__':
     x_train, y_train, x_test, y_test = get_data(args)
 
     'Initiate model'
-    base_model = Simple1DCNN(640512, dim=(640512), n_channels=1, n_labels=10, logging=args.logging)
+    base_model = Simple1DCNN(640512, dim=(640512,), n_channels=1, n_labels=10, logging=args.logging)
     #base_model = Simple2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10, logging=args.logging)
 
     if not os.path.exists(args.logging):

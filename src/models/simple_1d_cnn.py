@@ -52,6 +52,6 @@ class Simple1DCNN(BaseModel):
 
         # MLP
         model.add(Flatten())
-        model.add(Dense(labels, activation='softmax'))
+        model.add(Dense(self.n_labels, activation='softmax'))
 
         return model
