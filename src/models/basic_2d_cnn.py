@@ -14,9 +14,9 @@ from keras.layers import Dropout
 from keras.layers import Flatten
 
 
-class Simple2DCNN(BaseModel):
+class Basic2DCNN(BaseModel):
 
-    model_name = "Simple2D_CNN"
+    model_name = "Basic2D_CNN"
 
     def transform_data(self, ids_temp: List[str], batch_size: int) -> Tuple[np.array, np.array]:
 
