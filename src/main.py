@@ -6,8 +6,9 @@ import keras
 import tensorflow as tf
 
 import music_to_npy_convertor, train_test_divider
-from models.simple_1d_cnn import Simple1DCNN
-from models.simple_2d_cnn import Simple2DCNN
+from models.basic_1d_cnn import Basic1DCNN
+from models.basic_2d_cnn import Basic2DCNN
+from models.sample_cnn_3_9 import SampleCNN39
 from evaluator import Evaluator
 import utils.gtzan_genres as gtzan
 import sqllite_repository as sql
@@ -43,7 +44,8 @@ if __name__ == '__main__':
     x_train, y_train, x_test, y_test = get_data(args)
 
     'Initiate model'
-    base_model = Simple1DCNN(640512, dim=(640512,), n_channels=1, n_labels=10, logging=args.logging)
+    #base_model = Simple1DCNN(640512, dim=(640512,), n_channels=1, n_labels=10, logging=args.logging)
+    base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, n_labels=10, logging=args.logging)
     #base_model = Simple2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10, logging=args.logging)
 
     if not os.path.exists(args.logging):

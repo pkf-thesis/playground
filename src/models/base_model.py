@@ -48,7 +48,7 @@ class BaseModel(ABC):
     def train(self, train_x, train_y, epoch_size, validation_size=0.1, batch_size=100) -> None:
 
         self.model.compile(
-            loss=keras.losses.categorical_crossentropy,
+            loss=keras.losses.binary_crossentropy,
             optimizer=keras.optimizers.Adam(),
             metrics=['accuracy'])
 
@@ -77,5 +77,4 @@ class BaseModel(ABC):
             epochs=epoch_size,
             workers=8,
             use_multiprocessing=True,
-            max_queue_size=20
         )
