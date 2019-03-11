@@ -17,10 +17,10 @@ class SampleCNN39(BaseModel):
     model_name = "SampleCNN_3_9"
 
     input_dim = 3 * 3 ** 9
-    overlap = 512
+    overlap = 29524
 
     def transform_data(self, ids_temp: List[str], batch_size: int) -> Tuple[np.array, np.array]:
-        new_batch_size = batch_size * (self.song_length / self.overlap)
+        new_batch_size = batch_size * int(((self.song_length - self.input_dim + self.overlap) / self.overlap))
         # Initialization
         X = np.empty((new_batch_size, *self.dimension, self.n_channels))
         y = np.empty(new_batch_size, dtype=int)
@@ -32,10 +32,11 @@ class SampleCNN39(BaseModel):
             genre = id.split('.')[0]
 
             # Convert song to sub songs
-            sub_signals = self.split_song(song)
+            sub_signals = self.split_song(song, new_batch_size)
 
             for sub_song in sub_signals:
-                X[count,] = sub_song
+                sub_song = sub_song.reshape((-1, 1))
+                X[count, ] = sub_song
                 y[count] = gtzan.genres[genre]
 
                 count += 1
@@ -94,14 +95,14 @@ class SampleCNN39(BaseModel):
 
         return model
 
-    def split_song(self, song):
+    def split_song(self, song, batch_size):
         # Empty list to hold data
         temp_song = []
 
         # Get the input songs array size
         x_shape = song.shape[0]
         chunk = self.input_dim
-        offset = 512
+        offset = self.overlap
 
         # Split song and create sub samples
         splitted_song = [song[i:i + chunk] for i in range(0, x_shape, offset)]

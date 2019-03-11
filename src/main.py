@@ -15,10 +15,6 @@ import sqllite_repository as sql
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
-keras.backend.set_session(sess)
 
 def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
     """Split data into train and test"""
@@ -46,13 +42,13 @@ if __name__ == '__main__':
     'Initiate model'
     #base_model = Simple1DCNN(640512, dim=(640512,), n_channels=1, n_labels=10, logging=args.logging)
     base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, n_labels=10, logging=args.logging)
-    #base_model = Simple2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10, logging=args.logging)
+    #base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10, logging=args.logging)
 
     if not os.path.exists(args.logging):
         os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))
 
     'Train'
-    base_model.train(x_train, y_train, epoch_size=5, batch_size=25)
+    base_model.train(x_train, y_train, epoch_size=5, batch_size=10)
 
     'Evaluate model'
     evaluator = Evaluator()

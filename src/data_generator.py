@@ -44,7 +44,6 @@ class DataGenerator(keras.utils.Sequence):
     def __data_generation(self, ids_temp):
         """Generates data containing batch_size samples"""
         # X : (n_samples, *dim, n_channels)
-        print('Generating batch')
         X, y = self.transform_data(ids_temp, self.batch_size)
 
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)

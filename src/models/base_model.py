@@ -2,6 +2,7 @@ from abc import ABC
 from typing import Tuple
 
 import keras
+from keras.utils import multi_gpu_model
 from keras.callbacks import ModelCheckpoint, CSVLogger
 import numpy as np
 from data_generator import DataGenerator
@@ -27,7 +28,8 @@ class BaseModel(ABC):
         self.model.summary()
 
         weight_name = 'best_weights_%s_%s.6f.hdf5' % (self.model_name, self.dimension)
-        check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto')
+        check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
+                                        save_weights_only=True)
 
         if logging:
             csv_logger = CSVLogger(filename=utils.make_path(logging,self.model_name + '.csv'))
@@ -47,8 +49,13 @@ class BaseModel(ABC):
 
     def train(self, train_x, train_y, epoch_size, validation_size=0.1, batch_size=100) -> None:
 
+        try:
+            self.model = multi_gpu_model(self.model, gpus=2)
+        except:
+            pass
+
         self.model.compile(
-            loss=keras.losses.binary_crossentropy,
+            loss=keras.losses.categorical_crossentropy,
             optimizer=keras.optimizers.Adam(),
             metrics=['accuracy'])
 
