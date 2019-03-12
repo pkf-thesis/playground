@@ -10,6 +10,8 @@ import numpy as np
 from data_generator import DataGenerator
 
 from utils import utils
+from utils.loss_learning_rate_scheduler import LossLearningRateScheduler
+
 
 
 class BaseModel(ABC):
@@ -30,6 +32,10 @@ class BaseModel(ABC):
         weight_name = 'best_weights_%s_%s.6f.hdf5' % (self.model_name, self.dimension)
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
                                         save_weights_only=True)
+        self.callbacks.append(check_pointer)
+
+        loss_learning_rate_scheduler = LossLearningRateScheduler(base_lr=0.1, lookback_epochs=3)
+        self.callbacks.append(loss_learning_rate_scheduler)
 
         if args.logging:
             csv_logger = CSVLogger(filename=utils.make_path(args.logging,self.model_name + '.csv'))
@@ -37,8 +43,6 @@ class BaseModel(ABC):
 
         if args.gpu:
             self.gpu = args.gpu
-
-        self.callbacks.append(check_pointer)
 
     @property
     def model_name(self):

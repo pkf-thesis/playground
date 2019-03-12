@@ -11,6 +11,7 @@ from keras.layers import Conv1D
 from keras.layers import MaxPooling1D
 from keras.layers import Dropout
 from keras.layers import Flatten
+from keras.layers import BatchNormalization
 
 class SampleCNN39(BaseModel):
 
@@ -32,7 +33,7 @@ class SampleCNN39(BaseModel):
             genre = id.split('.')[0]
 
             # Convert song to sub songs
-            sub_signals = self.split_song(song, new_batch_size)
+            sub_signals = self.split_song(song)
 
             for sub_song in sub_signals:
                 sub_song = sub_song.reshape((-1, 1))
@@ -48,45 +49,56 @@ class SampleCNN39(BaseModel):
 
         #First layer
         model.add(Conv1D(128, kernel_size=3, strides=3, padding='same', activation='relu', input_shape=self.input_shape))
+        model.add(BatchNormalization())
 
         #Second layer
         model.add(Conv1D(128, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Third layer
         model.add(Conv1D(128, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Fourth layer
         model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Fith layer
         model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Sixth layer
         model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Seventh layer
         model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Eigth layer
         model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Ninth layer
         model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Tenth layer
         model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
         #Eleventh layer
         model.add(Conv1D(512, 1, strides=1, padding='same', activation='relu'))
+        model.add(BatchNormalization())
         model.add(Dropout(0.5))
 
         #Twelveth layer
@@ -95,7 +107,7 @@ class SampleCNN39(BaseModel):
 
         return model
 
-    def split_song(self, song, batch_size):
+    def split_song(self, song):
         # Empty list to hold data
         temp_song = []
 
