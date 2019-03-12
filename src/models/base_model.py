@@ -1,5 +1,7 @@
 from abc import ABC
 from typing import Tuple
+import os
+import multiprocessing
 
 import keras
 from keras.utils import multi_gpu_model
@@ -7,16 +9,14 @@ from keras.callbacks import ModelCheckpoint, CSVLogger
 import numpy as np
 from data_generator import DataGenerator
 
-import datetime
-
 from utils import utils
 
 
 class BaseModel(ABC):
 
-    def __init__(self, song_length: int, dim, n_channels: int, n_labels: int, logging: str=None):
+    def __init__(self, song_length: int, dim, n_channels: int, n_labels: int, args):
         self.callbacks = []
-
+        self.gpu = None
         self.song_length = song_length # Length of the song to the network
 
         self.dimension = dim
@@ -31,9 +31,12 @@ class BaseModel(ABC):
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
                                         save_weights_only=True)
 
-        if logging:
-            csv_logger = CSVLogger(filename=utils.make_path(logging,self.model_name + '.csv'))
+        if args.logging:
+            csv_logger = CSVLogger(filename=utils.make_path(args.logging,self.model_name + '.csv'))
             self.callbacks.append(csv_logger)
+
+        if args.gpu:
+            self.gpu = args.gpu
 
         self.callbacks.append(check_pointer)
 
@@ -48,16 +51,19 @@ class BaseModel(ABC):
         raise NotImplementedError
 
     def train(self, train_x, train_y, epoch_size, validation_size=0.1, batch_size=100) -> None:
-
-        try:
-            self.model = multi_gpu_model(self.model, gpus=2)
-        except:
-            pass
+        use_multiprocessing = False
+        if self.gpu:
+            try:
+                os.environ["CUDA_VISIBLE_DEVICES"] = ', '.join(self.gpu)
+                self.model = multi_gpu_model(self.model, gpus=len(self.gpu))
+                use_multiprocessing = True
+            except:
+                pass
 
         self.model.compile(
-            loss=keras.losses.categorical_crossentropy,
+            loss=keras.losses.binary_crossentropy,
             optimizer=keras.optimizers.Adam(),
-            metrics=['accuracy'])
+            metrics=['categorical_accuracy'])
 
         num_train = len(train_x)
 
@@ -75,6 +81,9 @@ class BaseModel(ABC):
 
         num_train = len(train_x)
 
+        workers = multiprocessing.cpu_count()
+        print('Using ' + str(workers) + ' workers')
+
         self.model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
@@ -82,6 +91,6 @@ class BaseModel(ABC):
             validation_data=val_gen,
             validation_steps=len(validation_x) // batch_size,
             epochs=epoch_size,
-            workers=8,
-            use_multiprocessing=True,
+            workers=workers,
+            use_multiprocessing=use_multiprocessing,
         )
