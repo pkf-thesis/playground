@@ -34,7 +34,7 @@ class BaseModel(ABC):
                                         save_weights_only=True)
         self.callbacks.append(check_pointer)
 
-        loss_learning_rate_scheduler = LossLearningRateScheduler(base_lr=0.1, lookback_epochs=3)
+        loss_learning_rate_scheduler = LossLearningRateScheduler(base_lr=0.01, lookback_epochs=3, decay_multiple=0.2)
         self.callbacks.append(loss_learning_rate_scheduler)
 
         if args.logging:

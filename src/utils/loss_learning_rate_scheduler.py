@@ -39,9 +39,16 @@ class LossLearningRateScheduler(keras.callbacks.History):
 
             target_loss = self.history[self.loss_type]
 
-            loss_diff = target_loss[-int(self.lookback_epochs)] - target_loss[-1]
+            last_loss = target_loss[-1]
 
-            if loss_diff <= np.abs(target_loss[-1]) * (self.decay_threshold * self.lookback_epochs):
+            change_lr = False
+            for i in range(2, self.lookback_epochs):
+                if last_loss > target_loss[-i]:
+                    change_lr = True
+                    break
+                last_loss = target_loss[-i]
+
+            if change_lr:
 
                 print(' '.join(
                     ('Changing learning rate from', str(current_lr), 'to', str(current_lr * self.decay_multiple))))

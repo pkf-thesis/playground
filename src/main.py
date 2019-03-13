@@ -46,7 +46,7 @@ if __name__ == '__main__':
         os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))
 
     'Train'
-    base_model.train(x_train, y_train, epoch_size=500, batch_size=10)
+    base_model.train(x_train, y_train, epoch_size=500, batch_size=4)
 
     'Evaluate model'
     evaluator = Evaluator()
