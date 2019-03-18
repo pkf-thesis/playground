@@ -24,9 +24,6 @@ def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
 
 
 if __name__ == '__main__':
-
-    sql.fetch_all_songs()
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "-data", help="gtzan, mtat or msd")
     parser.add_argument("-logging", help="Logs to csv file")
@@ -56,7 +53,7 @@ if __name__ == '__main__':
         'Train'
         base_model.train(x_train, y_train, epoch_size=100, lr=lr, batch_size=10)
 
-        #Load best model
+        # Load best model
 
         'Evaluate model'
         evaluator = Evaluator()
