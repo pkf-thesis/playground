@@ -15,7 +15,7 @@ class Evaluator:
         score = base_model.model.evaluate_generator(test_generator, len(x_test) / 5)
         print("val_loss = {:.3f} and val_acc = {:.3f}".format(score[0], score[1]))
 
-
+        # Testing predict
         song = np.load('../npys/blues.00015.npy')
         song = song[0:3 * 3 ** 9]
         song = song.reshape((-1, 1))

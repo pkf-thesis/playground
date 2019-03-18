@@ -54,6 +54,8 @@ if __name__ == '__main__':
         base_model.train(x_train, y_train, epoch_size=100, lr=lr, batch_size=10)
 
         # Load best model
+        weight_name = 'best_weights_%s_%s_%s.hdf5' % (base_model.model_name, base_model.dimension, lr)
+        base_model.model.load_weights(weight_name)
 
         'Evaluate model'
         evaluator = Evaluator()

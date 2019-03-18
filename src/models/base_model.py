@@ -16,7 +16,6 @@ from utils.loss_learning_rate_scheduler import LossLearningRateScheduler
 from utils.learning_rate_tracker import LearningRateTracker
 
 
-
 class BaseModel(ABC):
 
     def __init__(self, song_length: int, dim, n_channels: int, n_labels: int, args):
@@ -56,16 +55,23 @@ class BaseModel(ABC):
 
     def train(self, train_x, train_y, epoch_size, lr, validation_size=0.1, batch_size=100) -> None:
 
+        # Save model
+        json_name = 'model_architecture_%s_%s.6f.json' % (self.model_name, lr)
+        if os.path.isfile(json_name) != 1:
+            json_string = self.model.to_json()
+            open(json_name, 'w').write(json_string)
+
         use_multiprocessing = False
+        train_model = self.model
         if self.gpu:
             try:
                 os.environ["CUDA_VISIBLE_DEVICES"] = ', '.join(self.gpu)
-                self.model = multi_gpu_model(self.model, gpus=len(self.gpu))
+                train_model = multi_gpu_model(self.model, gpus=len(self.gpu))
                 use_multiprocessing = True
             except:
                 pass
 
-        self.model.compile(
+        train_model.compile(
             loss=keras.losses.binary_crossentropy,
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
             metrics=['categorical_accuracy'])
@@ -86,12 +92,12 @@ class BaseModel(ABC):
 
         num_train = len(train_x)
 
-        weight_name = 'best_weights_%s_%s_%s.6f.hdf5' % (self.model_name, self.dimension, lr)
+        weight_name = 'best_weights_%s_%s_%s.hdf5' % (self.model_name, self.dimension, lr)
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', save_best_only=True, mode='auto',
                                         save_weights_only=True)
         self.callbacks.append(check_pointer)
 
-        history = self.model.fit_generator(
+        history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
             steps_per_epoch=num_train // batch_size,
@@ -119,6 +125,6 @@ class BaseModel(ABC):
         plt.ylabel('loss')
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
-        plt.savefig('loss' + plot_name, bbox_inches='tight')
+        plt.savefig('loss_' + plot_name, bbox_inches='tight')
 
         plt.clf()
