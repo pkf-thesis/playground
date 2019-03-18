@@ -24,6 +24,9 @@ def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
 
 
 if __name__ == '__main__':
+
+    sql.fetch_all_songs()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "-data", help="gtzan, mtat or msd")
     parser.add_argument("-logging", help="Logs to csv file")
