@@ -10,26 +10,27 @@ frequency = 22050
 
 error_logs = open("../logs.txt", "w")
 
-count = 0
 
 
 def convert_files():
+    count = 0
+
     print("Converting train data")
     train_ids = [song.rstrip() for song in open("../data/msd/train")]
-    convert_list(train_ids, "../data/msd/train_path.txt")
+    convert_list(train_ids, "../data/msd/train_path.txt", count)
 
     print("Converting valid data")
     valid_ids = [song.rstrip() for song in open("../data/msd/valid")]
-    convert_list(valid_ids, "../data/msd/valid_path.txt")
+    convert_list(valid_ids, "../data/msd/valid_path.txt", count)
 
     print("Converting test data")
     test_ids = [song.rstrip() for song in open("../../data/msd/test")]
-    convert_list(test_ids, "../data/msd/test_path.txt")
+    convert_list(test_ids, "../data/msd/test_path.txt", count)
 
     error_logs.close()
 
 
-def convert_list(list_ids, file_name):
+def convert_list(list_ids, file_name, count):
     dir_name = ''
     file_ids = open(file_name, "w")
     for root, dirs, files in os.walk(path):
@@ -38,7 +39,8 @@ def convert_list(list_ids, file_name):
             if splitted_file[0] in list_ids:
                 file_name = os.path.join(root, file)
                 if count % 1000 == 0:
-                    dir_name = "%s - %s" % (count, count + 1000)
+                    dir_name = "%s-%s" % (count, count + 1000)
+                count += 1
                 if file.endswith(".mp3"):
                     save_name = feature_path + str(dir_name) + "/" + file.replace('.mp3', '')
                     if not os.path.exists(os.path.dirname(save_name)):
