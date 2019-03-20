@@ -18,12 +18,13 @@ from utils.learning_rate_tracker import LearningRateTracker
 
 class BaseModel(ABC):
 
-    def __init__(self, song_length: int, dim, n_channels: int, n_labels: int, args):
+    def __init__(self, song_length: int, dim, n_channels: int, n_labels: int, batch_size: int, args):
         self.song_length = song_length
         self.dimension = dim
         self.n_channels = n_channels
         self.input_shape = np.empty((*self.dimension, self.n_channels)).shape
         self.n_labels = n_labels
+        self.batch_size = batch_size
 
         self.model = self.build_model()
         self.model.summary()
@@ -93,7 +94,7 @@ class BaseModel(ABC):
         num_train = len(train_x)
 
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (self.model_name, self.dimension, lr)
-        check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', save_best_only=True, mode='auto',
+        check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
                                         save_weights_only=True)
         self.callbacks.append(check_pointer)
 
@@ -108,6 +109,11 @@ class BaseModel(ABC):
             use_multiprocessing=use_multiprocessing,
         )
 
+        self._plot_training(history, lr)
+
+        return train_model
+
+    def _plot_training(self, history, lr):
         plot_name = '%s_%s.png' % (self.model_name, lr)
         # summarize history for accuracy
         plt.plot(history.history['categorical_accuracy'])

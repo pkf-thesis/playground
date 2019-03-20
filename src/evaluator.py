@@ -7,12 +7,15 @@ import numpy as np
 
 
 class Evaluator:
+
+    def __init__(self, batch_size):
+        self.batch_size = batch_size
     
-    def evaluate(self, base_model: BaseModel, x_test: List[str], y_test: List[str]) -> None:
+    def evaluate(self, base_model: BaseModel, model, x_test: List[str], y_test: List[str]) -> None:
         test_generator = DataGenerator(base_model.transform_data, x_test, y_test, batch_size=5,
                                   dim=base_model.dimension, n_classes=base_model.n_labels)
 
-        score = base_model.model.evaluate_generator(test_generator, len(x_test) / 5)
+        score = model.evaluate_generator(test_generator, len(x_test) / 5)
         print("val_loss = {:.3f} and val_acc = {:.3f}".format(score[0], score[1]))
 
         # Testing predict
@@ -21,5 +24,8 @@ class Evaluator:
         song = song.reshape((-1, 1))
         print(song.shape)
         song = song.reshape(1, 3 * 3**9, 1)
-        prediction = base_model.model.predict(song)
+        prediction = model.predict(song)
         print(prediction)
+
+    def predict(self):
+        predict_generator

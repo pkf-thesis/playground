@@ -8,9 +8,13 @@ import os
 import music_to_npy_convertor, train_test_divider
 from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
-from evaluator import Evaluator
 import utils.gtzan_genres as gtzan
 import sqllite_repository as sql
+from evaluator import Evaluator
+
+batch_size = 10
+learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
+
 
 def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
     """Split data into train and test"""
@@ -39,25 +43,25 @@ if __name__ == '__main__':
 
     'Initiate model'
     if args.local:
-        base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10, args=args)
+        base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10,
+                                batch_size=batch_size, args=args)
     else:
         base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, n_labels=10, args=args)
 
     if not os.path.exists(args.logging):
         os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))
 
-    learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
+    evaluator = Evaluator(batch_size=batch_size)
 
     for lr in learning_rates:
 
         'Train'
-        base_model.train(x_train, y_train, epoch_size=100, lr=lr, batch_size=10)
+        model = base_model.train(x_train, y_train, epoch_size=100, lr=lr, batch_size=10)
 
-        # Load best model
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (base_model.model_name, base_model.dimension, lr)
-        base_model.model.load_weights(weight_name)
+        model.load_weights(weight_name)
 
         'Evaluate model'
-        evaluator = Evaluator()
         # (test_x, test_y) = sql.fetchTagsFromSongs(test)
-        evaluator.evaluate(base_model, x_test, y_test)
+        evaluator.evaluate(base_model, model, x_test, y_test)
+
