@@ -9,7 +9,7 @@ import sqlite3
 
 
 def database():
-    db_file = "../db/lastfm_tags.db"
+    db_file = "../../db/lastfm_tags.db"
 
     if not os.path.isfile(db_file):
         print ('ERROR: db file %s does not exist' % db_file)
