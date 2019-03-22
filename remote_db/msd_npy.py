@@ -31,6 +31,6 @@ def convert_files(path, feature_path, frequency, max_length):
                     y = y[0:max_length]
 
                 print(len(y), save_name)
-                np.save(save_name, y)
+                np.savez_compressed(save_name, y)
 
 convert_files("/30T/Music/MSD/audio/", "npys/msd/", 22050, 640512)
