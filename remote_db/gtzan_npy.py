@@ -8,7 +8,7 @@ def convert_files(path, feature_path, frequency, max_length):
     for root, dirs, files in os.walk(path):
         for file in files:
             file_name = os.path.join(root, file)
-            dirname = int(count/1000)
+            dirname = int(count/100)
             count = count + 1
             if file.endswith(".au"):
                 save_name = feature_path + str(dirname) + "/" + file.replace('.au', '')
@@ -31,6 +31,6 @@ def convert_files(path, feature_path, frequency, max_length):
                     y = y[0:max_length]
 
                 print(len(y), save_name)
-                np.save(save_name, y)
+                np.savez_compressed(save_name, y)
 
 convert_files("data/gtzan/", "npys/gtzan/", 22050, 640512)
