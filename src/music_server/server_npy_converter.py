@@ -4,12 +4,12 @@ import numpy as np
 import librosa
 
 path = "/30T/Music/MSD/audio"
-feature_path = "../npys/msd/"
+feature_path = "/30T/Music/MSD/npzs/msd/"
 max_length = 640512
 frequency = 22050
+dir_name = ''
 
-error_logs = open("../logs.txt", "w")
-
+error_logs = open("../logs.txt", "a")
 
 
 def convert_files():
@@ -17,6 +17,7 @@ def convert_files():
 
     print("Converting train data")
     train_ids = [song.rstrip() for song in open("../data/msd/train")]
+    # loaded_train_ids = [song.split('/')[-1].rstrip() for song in open("../data/msd/train_path.txt")]
     convert_list(train_ids, "../data/msd/train_path.txt", count)
 
     print("Converting valid data")
@@ -24,15 +25,14 @@ def convert_files():
     convert_list(valid_ids, "../data/msd/valid_path.txt", count)
 
     print("Converting test data")
-    test_ids = [song.rstrip() for song in open("../../data/msd/test")]
+    test_ids = [song.rstrip() for song in open("../data/msd/test")]
     convert_list(test_ids, "../data/msd/test_path.txt", count)
 
     error_logs.close()
 
 
 def convert_list(list_ids, file_name, count):
-    dir_name = ''
-    file_ids = open(file_name, "w")
+    file_ids = open(file_name, "a")
     for root, dirs, files in os.walk(path):
         for file in files:
             splitted_file = file.split('.')
@@ -40,8 +40,8 @@ def convert_list(list_ids, file_name, count):
                 file_name = os.path.join(root, file)
                 if count % 1000 == 0:
                     dir_name = "%s-%s" % (count, count + 1000)
-                count += 1
                 if file.endswith(".mp3"):
+                    count += 1
                     save_name = feature_path + str(dir_name) + "/" + file.replace('.mp3', '')
                     if not os.path.exists(os.path.dirname(save_name)):
                         os.makedirs(os.path.dirname(save_name))
