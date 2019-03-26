@@ -54,7 +54,7 @@ class BaseModel(ABC):
     def build_model(self):
         raise NotImplementedError
 
-    def train(self, train_x, train_y, epoch_size, lr, validation_size=0.1, batch_size=100) -> None:
+    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, batch_size=100) -> None:
 
         # Save model
         json_name = 'model_architecture_%s_%s.6f.json' % (self.model_name, lr)
@@ -79,16 +79,10 @@ class BaseModel(ABC):
 
         num_train = len(train_x)
 
-        if validation_size != 0.0:
-            validation_x = train_x[:int(num_train*validation_size)]
-            validation_y = train_y[:int(num_train*validation_size)]
-            train_x = train_x[int(num_train*validation_size):]
-            train_y = train_y[int(num_train*validation_size):]
-
         train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size,
                                   dim=self.dimension, n_classes=self.n_labels)
 
-        val_gen = DataGenerator(self.transform_data, validation_x, validation_y, batch_size,
+        val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size,
                                 dim=self.dimension, n_classes=self.n_labels)
 
         num_train = len(train_x)
@@ -103,7 +97,7 @@ class BaseModel(ABC):
             callbacks=self.callbacks,
             steps_per_epoch=num_train // batch_size,
             validation_data=val_gen,
-            validation_steps=len(validation_x) // batch_size,
+            validation_steps=len(valid_x) // batch_size,
             epochs=epoch_size,
             workers=self.workers,
             use_multiprocessing=use_multiprocessing,

@@ -30,6 +30,19 @@ def fetch_tag_from_song(tid):
     return data
 
 
+def fetch_tag_from_song_above_threshold(tid, threshold):
+    db_file = database()
+    conn = sqlite3.connect(db_file)
+
+    sql = "SELECT tags.tag, tid_tag.val FROM tid_tag, tids, tags WHERE tags.ROWID=tid_tag.tag AND " \
+          "tid_tag.tid=tids.ROWID AND tids.tid='%s' AND tid_tag.val > %s" % (tid, threshold)
+    res = conn.execute(sql)
+    data = res.fetchall()
+
+    conn.close()
+    return data
+
+
 def fetch_tags_from_songs(tids):
     tags = {}
     db_file = database()
@@ -37,7 +50,7 @@ def fetch_tags_from_songs(tids):
 
     str_representation = "','".join(tids)
     sql = "SELECT tids.tid, tags.tag, tid_tag.val FROM tid_tag, tids, tags WHERE tags.ROWID=tid_tag.tag AND " \
-          "tid_tag.tid=tids.ROWID and tids.tid IN ('%s')" % str_representation
+          "tid_tag.tid=tids.ROWID AND tids.tid IN ('%s')" % str_representation
     res = conn.execute(sql)
     data = res.fetchall()
 
@@ -48,6 +61,28 @@ def fetch_tags_from_songs(tids):
             tags[line[0]].append([line[1], line[2]])
         else:
             tags[line[0]] = [[line[1], line[2]]]
+
+    return tags
+
+
+def fetch_tags_from_songs_above_treshold(tids, threshold):
+    tags = {}
+    db_file = database()
+    conn = sqlite3.connect(db_file)
+
+    str_representation = "','".join(tids)
+    sql = "SELECT tids.tid, tags.tag FROM tid_tag, tids, tags WHERE tags.ROWID=tid_tag.tag AND " \
+          "tid_tag.tid=tids.ROWID AND tids.tid IN ('%s') AND tid_tag.val > %s" % (str_representation, threshold)
+    res = conn.execute(sql)
+    data = res.fetchall()
+
+    conn.close()
+
+    for line in data:
+        if line[0] in tags:
+            tags[line[0]].append(line[1])
+        else:
+            tags[line[0]] =  [line[1]]
 
     return tags
 

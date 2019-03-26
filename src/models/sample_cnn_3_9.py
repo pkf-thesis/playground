@@ -31,11 +31,11 @@ class SampleCNN39(BaseModel):
         count = 0
         # Generate data
         for i, id in enumerate(ids_temp):
-            song = np.load('../npys/' + id)
+            song = np.load("../sdb/data/%s.npz" % id)
             genre = id.split('.')[0]
 
             # Convert song to sub songs
-            sub_signals = self.split_song(song, num_segments)
+            sub_signals = self.split_song(song['arr_0'], num_segments)
 
             for sub_song in sub_signals:
                 sub_song = sub_song.reshape((-1, 1))

@@ -2,29 +2,39 @@ from typing import List, Tuple
 
 import argparse
 import os
+import numpy as np
 #import keras
 #import tensorflow as tf
 
 import music_to_npy_convertor, train_test_divider
 from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
-import utils.gtzan_genres as gtzan
-import sqllite_repository as sql
 from evaluator import Evaluator
 
 batch_size = 10
 learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
 
 
-def get_data(args) -> Tuple[List[str], List[str], List[str], List[str]]:
+def get_data(args):
     """Split data into train and test"""
 
-    x_train, y_train, x_test, y_test = None, None, None, None
+    x_train, y_train, x_valid, y_valid, x_test, y_test = None, None, None, None, None, None
 
     if args.d == 'gtzan':
         x_train, y_train, x_test, y_test = train_test_divider.split_data_sklearn("../npys", 0.2)
 
-    return x_train, y_train, x_test, y_test
+    elif args.d == 'msd':
+        base_path = "../data/msd/"
+        x_train = [song.rstrip() for song in open(base_path + "train_path.txt")]
+        y_train = np.load(base_path + "y_train.npz")
+
+        x_valid = [song.rstrip() for song in open(base_path + "valid_path.txt")]
+        y_valid = np.load(base_path + "y_valid.npz")
+
+        x_test = [song.rstrip() for song in open(base_path + "test_path.txt")]
+        y_test = np.load(base_path + "y_test.npz")
+
+    return x_train, y_train, x_valid, y_valid, x_test, y_test
 
 
 if __name__ == '__main__':
@@ -39,14 +49,14 @@ if __name__ == '__main__':
     if not os.path.exists("../npys"):
         music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 640512)
 
-    x_train, y_train, x_test, y_test = get_data(args)
+    x_train, y_train, x_valid, y_valid, x_test, y_test = get_data(args)
 
     'Initiate model'
     if args.local:
         base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10,
                                 batch_size=batch_size, args=args)
     else:
-        base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, n_labels=10, args=args)
+        base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, n_labels=50, batch_size=batch_size, args=args)
 
     if not os.path.exists(args.logging):
         os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))
@@ -56,7 +66,7 @@ if __name__ == '__main__':
     for lr in learning_rates:
 
         'Train'
-        model = base_model.train(x_train, y_train, epoch_size=100, lr=lr, batch_size=10)
+        model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, batch_size=10)
 
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (base_model.model_name, base_model.dimension, lr)
         model.load_weights(weight_name)
