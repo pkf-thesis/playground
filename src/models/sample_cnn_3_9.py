@@ -3,8 +3,6 @@ import numpy as np
 from keras import Input, Model
 
 from models.base_model import BaseModel
-import utils.gtzan_genres as gtzan
-
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Convolution1D
@@ -21,30 +19,36 @@ class SampleCNN39(BaseModel):
     input_dim = 3 * 3 ** 9
     overlap = 0
 
-    def transform_data(self, ids_temp: List[str], batch_size: int) -> Tuple[np.array, np.array]:
+    def transform_data(self, ids_temp: List[str], labels_temp, batch_size: int) -> Tuple[np.array, np.array]:
         num_segments = self.calculate_num_segments(self.song_length, self.input_dim)
         new_batch_size = batch_size * num_segments
+
         # Initialization
-        X = np.empty((new_batch_size, *self.dimension, self.n_channels))
-        y = np.empty(new_batch_size, dtype=int)
+        x = np.empty((new_batch_size, *self.dimension, self.n_channels))
+        y = np.empty((new_batch_size, len(labels_temp[0])))
 
         count = 0
         # Generate data
-        for i, id in enumerate(ids_temp):
-            song = np.load("../sdb/data/%s.npz" % id)
-            genre = id.split('.')[0]
+        for i, song_id in enumerate(ids_temp):
+            song = np.load("../sdb/data/%s/%s.npz" % (self.dataset, song_id))
+
+            song_temp = None
+            try:
+                song_temp = song['arr_0']
+            except:
+                print(song_id)
 
             # Convert song to sub songs
-            sub_signals = self.split_song(song['arr_0'], num_segments)
+            sub_signals = self.split_song(song_temp, num_segments)
 
             for sub_song in sub_signals:
                 sub_song = sub_song.reshape((-1, 1))
-                X[count, ] = sub_song
-                y[count] = gtzan.genres[genre]
+                x[count, ] = sub_song
+                y[count] = labels_temp[i]
 
                 count += 1
 
-        return X, y
+        return x, y
 
     def build_model_2(self):
         activ = 'relu'

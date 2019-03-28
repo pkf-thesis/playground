@@ -1,17 +1,16 @@
 import numpy as np
 import keras
-import os
+from sklearn.utils import shuffle
 
 
 class DataGenerator(keras.utils.Sequence):
 
-    def __init__(self, transform, ids, labels, batch_size=32, dim=(64000,), n_channels=1,
-                 n_classes=10, shuffle=True):
+    def __init__(self, transform, ids, labels, batch_size, dim, n_channels, n_classes, shuffle=True):
         self.transform_data = transform
-        self.dim = dim
-        self.batch_size = batch_size
-        self.labels = labels
         self.ids = ids
+        self.labels = labels
+        self.batch_size = batch_size
+        self.dim = dim
         self.n_channels = n_channels
         self.n_classes = n_classes
         self.shuffle = shuffle
@@ -23,27 +22,31 @@ class DataGenerator(keras.utils.Sequence):
 
     def __getitem__(self, index):
         """Generate one batch of data"""
+
         # Generate indexes of the batch
-        indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        x_indexes = range(index*self.batch_size, (index+1)*self.batch_size)
+        y_indexes = range(index*self.batch_size, (index+1)*self.batch_size)
+
 
         # Find list of IDs
-        ids_temp = [self.ids[k] for k in indexes]
+        ids_temp = [self.ids[k] for k in x_indexes]
+        labels_temp = [self.labels[k] for k in y_indexes]
 
         # Generate data
-        X, y = self.__data_generation(ids_temp)
+        x, y = self.__data_generation(ids_temp, labels_temp)
 
-        return X, y
+        return x, y
 
     def on_epoch_end(self):
         """Updates indexes after each epoch"""
-        self.indexes = np.arange(len(self.ids))
+        ids_tmp = self.ids
+        labels_tmp = self.labels
 
         if self.shuffle:
-            np.random.shuffle(self.indexes)
+            self.ids, self.labels = shuffle(ids_tmp, labels_tmp, random_state=0)
 
-    def __data_generation(self, ids_temp):
+    def __data_generation(self, ids_temp, labels_temp):
         """Generates data containing batch_size samples"""
         # X : (n_samples, *dim, n_channels)
-        X, y = self.transform_data(ids_temp, self.batch_size)
-
-        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+        x, y = self.transform_data(ids_temp, labels_temp, self.batch_size)
+        return x, y  # keras.utils.to_categorical(y, num_classes=self.n_classes)

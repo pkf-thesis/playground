@@ -3,8 +3,6 @@ from typing import List, Tuple
 import argparse
 import os
 import numpy as np
-#import keras
-#import tensorflow as tf
 
 import music_to_npy_convertor, train_test_divider
 from models.basic_2d_cnn import Basic2DCNN
@@ -21,18 +19,31 @@ def get_data(args):
     x_train, y_train, x_valid, y_valid, x_test, y_test = None, None, None, None, None, None
 
     if args.d == 'gtzan':
-        x_train, y_train, x_test, y_test = train_test_divider.split_data_sklearn("../npys", 0.2)
+        validation_size = 0.1
+
+        x_train, y_train, x_test, y_test = train_test_divider.split_data_sklearn("../data/gtzan/ids.txt", 0.2)
+
+        num_train = len(x_train)
+        x_valid = x_train[:int(num_train * validation_size)]
+        y_valid = y_train[:int(num_train * validation_size)]
+        x_train = x_train[int(num_train * validation_size):]
+        y_train = y_train[int(num_train * validation_size):]
 
     elif args.d == 'msd':
         base_path = "../data/msd/"
         x_train = [song.rstrip() for song in open(base_path + "train_path.txt")]
-        y_train = np.load(base_path + "y_train.npz")
+        y_train = np.load(base_path + "y_train.npz")['arr_0']
+
+        # Fix for removing npz files which can't be loaded
+        error_idx = x_train.index("292000-293000/TRCTUYS128F425175B")
+        del x_train[error_idx]
+        y_train = np.delete(y_train, [error_idx], 0)
 
         x_valid = [song.rstrip() for song in open(base_path + "valid_path.txt")]
-        y_valid = np.load(base_path + "y_valid.npz")
+        y_valid = np.load(base_path + "y_valid.npz")['arr_0']
 
         x_test = [song.rstrip() for song in open(base_path + "test_path.txt")]
-        y_test = np.load(base_path + "y_test.npz")
+        y_test = np.load(base_path + "y_test.npz")['arr_0']
 
     return x_train, y_train, x_valid, y_valid, x_test, y_test
 
@@ -46,17 +57,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if not os.path.exists("../npys"):
-        music_to_npy_convertor.convert_files("../data/gtzan/", "../npys/", 22050, 640512)
-
     x_train, y_train, x_valid, y_valid, x_test, y_test = get_data(args)
 
     'Initiate model'
     if args.local:
-        base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1, n_labels=10,
+        base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1,
                                 batch_size=batch_size, args=args)
     else:
-        base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, n_labels=50, batch_size=batch_size, args=args)
+        base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, batch_size=batch_size, args=args)
 
     if not os.path.exists(args.logging):
         os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))

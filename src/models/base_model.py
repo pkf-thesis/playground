@@ -18,12 +18,12 @@ from utils.learning_rate_tracker import LearningRateTracker
 
 class BaseModel(ABC):
 
-    def __init__(self, song_length: int, dim, n_channels: int, n_labels: int, batch_size: int, args):
+    def __init__(self, song_length: int, dim, n_channels: int, batch_size: int, args):
         self.song_length = song_length
         self.dimension = dim
         self.n_channels = n_channels
         self.input_shape = np.empty((*self.dimension, self.n_channels)).shape
-        self.n_labels = n_labels
+        self.n_labels = 10 if args.d == 'gtzan' else 50
         self.batch_size = batch_size
 
         self.model = self.build_model()
@@ -44,6 +44,8 @@ class BaseModel(ABC):
         if args.gpu:
             self.gpu = args.gpu
 
+        self.dataset = args.d
+
     @property
     def model_name(self):
         raise NotImplementedError
@@ -54,7 +56,7 @@ class BaseModel(ABC):
     def build_model(self):
         raise NotImplementedError
 
-    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, batch_size=100) -> None:
+    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, batch_size) -> None:
 
         # Save model
         json_name = 'model_architecture_%s_%s.6f.json' % (self.model_name, lr)
@@ -77,12 +79,10 @@ class BaseModel(ABC):
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
             metrics=['categorical_accuracy'])
 
-        num_train = len(train_x)
-
-        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size,
+        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size=batch_size, n_channels=1,
                                   dim=self.dimension, n_classes=self.n_labels)
 
-        val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size,
+        val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
         num_train = len(train_x)
@@ -108,7 +108,7 @@ class BaseModel(ABC):
         return train_model
 
     def _plot_training(self, history, lr):
-        plot_name = '%s_%s.png' % (self.model_name, lr)
+        plot_name = '%s_%s_%s.png' % (self.model_name, lr, self.dataset)
         # summarize history for accuracy
         plt.plot(history.history['categorical_accuracy'])
         plt.plot(history.history['val_categorical_accuracy'])
