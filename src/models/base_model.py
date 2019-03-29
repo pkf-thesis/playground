@@ -56,7 +56,7 @@ class BaseModel(ABC):
     def build_model(self):
         raise NotImplementedError
 
-    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, batch_size) -> None:
+    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr) -> None:
 
         # Save model
         json_name = 'model_architecture_%s_%s.6f.json' % (self.model_name, lr)
@@ -79,10 +79,10 @@ class BaseModel(ABC):
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
             metrics=['categorical_accuracy'])
 
-        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size=batch_size, n_channels=1,
+        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size=self.batch_size, n_channels=1,
                                   dim=self.dimension, n_classes=self.n_labels)
 
-        val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=batch_size, n_channels=1,
+        val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
         num_train = len(train_x)
@@ -95,9 +95,9 @@ class BaseModel(ABC):
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=num_train // batch_size,
+            steps_per_epoch=num_train // self.batch_size,
             validation_data=val_gen,
-            validation_steps=len(valid_x) // batch_size,
+            validation_steps=len(valid_x) // self.batch_size,
             epochs=epoch_size,
             workers=self.workers,
             use_multiprocessing=use_multiprocessing,

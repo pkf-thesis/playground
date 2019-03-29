@@ -9,7 +9,7 @@ from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
 from evaluator import Evaluator
 
-batch_size = 10
+batch_size = 20
 learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
 
 
@@ -61,8 +61,7 @@ if __name__ == '__main__':
 
     'Initiate model'
     if args.local:
-        base_model = Basic2DCNN(song_length=int(640512 * 0.1), dim=(128, 126), n_channels=1,
-                                batch_size=batch_size, args=args)
+        base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size, args=args)
     else:
         base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, batch_size=batch_size, args=args)
 
@@ -74,7 +73,7 @@ if __name__ == '__main__':
     for lr in learning_rates:
 
         'Train'
-        model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, batch_size=10)
+        model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
 
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (base_model.model_name, base_model.dimension, lr)
         model.load_weights(weight_name)

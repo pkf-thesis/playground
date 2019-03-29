@@ -24,7 +24,7 @@ class SampleCNN39(BaseModel):
         new_batch_size = batch_size * num_segments
 
         # Initialization
-        x = np.empty((new_batch_size, *self.dimension, self.n_channels))
+        x = np.empty((new_batch_size, *self.dimension, self.n_channels), dtype='float32')
         y = np.empty((new_batch_size, len(labels_temp[0])))
 
         count = 0
@@ -50,7 +50,7 @@ class SampleCNN39(BaseModel):
 
         return x, y
 
-    def build_model_2(self):
+    def build_model(self):
         activ = 'relu'
         init = 'he_uniform'
 
@@ -117,7 +117,7 @@ class SampleCNN39(BaseModel):
 
         return model
 
-    def build_model(self):
+    def build_model_2(self):
         model = Sequential()
 
         #First layer
