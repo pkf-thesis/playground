@@ -85,8 +85,6 @@ class BaseModel(ABC):
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
-        num_train = len(train_x)
-
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (self.model_name, self.dimension, lr)
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
                                         save_weights_only=True)
@@ -95,7 +93,7 @@ class BaseModel(ABC):
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=num_train // self.batch_size,
+            steps_per_epoch=len(train_x) // self.batch_size,
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
             epochs=epoch_size,

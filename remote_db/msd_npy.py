@@ -3,7 +3,7 @@ import os
 import numpy as np
 import librosa
 
-def convert_files(path, feature_path, frequency, max_length):
+def convert_files(path, feature_path, max_length):
     count = 0
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -33,4 +33,5 @@ def convert_files(path, feature_path, frequency, max_length):
                 print(len(y), save_name)
                 np.savez_compressed(save_name, y)
 
-convert_files("/30T/Music/MSD/audio/", "npys/msd/", 22050, 640512)
+
+convert_files("/30T/Music/MSD/audio/", "npys/msd/", 640512)
