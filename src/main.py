@@ -45,6 +45,17 @@ def get_data(args):
         x_test = [song.rstrip() for song in open(base_path + "test_path.txt")]
         y_test = np.load(base_path + "y_test.npz")['arr_0']
 
+    elif args.d == 'mtat':
+        base_path = "../data/mtat"
+        x_train = [song.rstrip() for song in open(base_path + "train_path.txt")]
+        y_train = np.load(base_path + "y_train_pub.npy")
+
+        x_valid = [song.rstrip() for song in open(base_path + "valid_path.txt")]
+        y_valid = np.load(base_path + "y_valid_pub.npy")
+
+        x_test = [song.rstrip() for song in open(base_path + "test_path.txt")]
+        y_test = np.load(base_path + "y_test_pub.npy")
+
     return x_train, y_train, x_valid, y_valid, x_test, y_test
 
 
