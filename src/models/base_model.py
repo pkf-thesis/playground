@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Tuple
 import os
+from datetime import datetime
 import multiprocessing
 import numpy as np
 
@@ -37,7 +38,7 @@ class BaseModel(ABC):
         self.callbacks.append(LearningRateTracker())
         self.callbacks.append(EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='auto'))
         if args.logging:
-            csv_logger = CSVLogger(filename=utils.make_path(args.logging,self.model_name + '.csv'))
+            csv_logger = CSVLogger(filename=utils.make_path(args.logging, "%s-%s_%s.csv" % (args.d, self.model_name, datetime.now())))
             self.callbacks.append(csv_logger)
 
         self.gpu = None

@@ -2,13 +2,15 @@ import src.sqllite_repository as sql
 
 # ids_from_db = sql.fetch_all_songs()
 
-loaded_train_ids = [song.split('/')[-1].rstrip() for song in open("../../data/msd/train_path.txt")]
-loaded_valid_ids = [song.split('/')[-1].rstrip() for song in open("../../data/msd/valid_path.txt")]
-loaded_test_ids = [song.split('/')[-1].rstrip() for song in open("../../data/msd/test_path.txt")]
+base_path = "../../data/%s"
 
-train_ids = [song.rstrip() for song in open("../../data/msd_ids/train")]
-valid_ids = list(open("../../data/msd_ids/valid").read().split('\n'))
-test_ids = list(open("../../data/msd_ids/test").read().split('\n'))
+loaded_train_ids = [song.split('/')[-1].rstrip() for song in open(base_path % "mtat/train_path.txt")]
+loaded_valid_ids = [song.split('/')[-1].rstrip() for song in open(base_path % "mtat/valid_path.txt")]
+loaded_test_ids = [song.split('/')[-1].rstrip() for song in open(base_path % "mtat/test_path.txt")]
+
+train_ids = [song.rstrip() for song in open(base_path % "mtat_ids/train.txt")]
+valid_ids = [song.rstrip() for song in open(base_path % "mtat_ids/valid.txt")]
+test_ids = [song.rstrip() for song in open(base_path % "mtat_ids/test.txt")]
 
 count = 0
 

@@ -46,7 +46,7 @@ def get_data(args):
         y_test = np.load(base_path + "y_test.npz")['arr_0']
 
     elif args.d == 'mtat':
-        base_path = "../data/mtat"
+        base_path = "../data/mtat/"
         x_train = [song.rstrip() for song in open(base_path + "train_path.txt")]
         y_train = np.load(base_path + "y_train_pub.npy")
 
