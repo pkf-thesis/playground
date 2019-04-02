@@ -116,6 +116,7 @@ class BaseModel(ABC):
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
         plt.savefig('acc_' + plot_name, bbox_inches='tight')
+        plt.clf()
 
         # summarize history for loss
         plt.plot(history.history['loss'])
@@ -125,5 +126,4 @@ class BaseModel(ABC):
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
         plt.savefig('loss_' + plot_name, bbox_inches='tight')
-
         plt.clf()
