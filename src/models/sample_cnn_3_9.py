@@ -19,13 +19,12 @@ class SampleCNN39(BaseModel):
     input_dim = 3 * 3 ** 9
     overlap = 0
 
-    def transform_data(self, ids_temp: List[str], labels_temp, batch_size: int) -> Tuple[np.array, np.array]:
-        num_segments = self.calculate_num_segments(self.song_length, self.input_dim)
-        new_batch_size = batch_size * num_segments
+    def transform_data(self, ids_temp: List[str], labels_temp) -> Tuple[np.array, np.array]:
+        batch_size = len(ids_temp) * self.num_segments
 
         # Initialization
-        x = np.empty((new_batch_size, *self.dimension, self.n_channels), dtype='float32')
-        y = np.empty((new_batch_size, len(labels_temp[0])))
+        x = np.empty((batch_size, *self.dimension, self.n_channels), dtype='float32')
+        y = np.empty((batch_size, len(labels_temp[0])))
 
         count = 0
         # Generate data
@@ -39,7 +38,7 @@ class SampleCNN39(BaseModel):
                 print(song_id)
 
             # Convert song to sub songs
-            sub_signals = self.split_song(song_temp, num_segments)
+            sub_signals = self.split_song(song_temp, self.num_segments)
 
             for sub_song in sub_signals:
                 sub_song = sub_song.reshape((-1, 1))
@@ -184,8 +183,6 @@ class SampleCNN39(BaseModel):
         # Empty list to hold data
         temp_song = []
 
-        # Get the input songs array size
-        x_shape = song.shape[0]
         chunk = self.input_dim
 
         # Split song and create sub samples
@@ -195,6 +192,3 @@ class SampleCNN39(BaseModel):
                 temp_song.append(sub_song)
 
         return np.array(temp_song)
-
-    def calculate_num_segments(self, song, input):
-        return song // input

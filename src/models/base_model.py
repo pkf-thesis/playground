@@ -26,6 +26,7 @@ class BaseModel(ABC):
         self.input_shape = np.empty((*self.dimension, self.n_channels)).shape
         self.n_labels = 10 if args.d == 'gtzan' else 50
         self.batch_size = batch_size
+        self.num_segments = self.calculate_num_segments(song_length, dim)
 
         self.model = self.build_model()
         self.model.summary()
@@ -37,9 +38,10 @@ class BaseModel(ABC):
         self.callbacks = []
         self.callbacks.append(LearningRateTracker())
         self.callbacks.append(EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='auto'))
+
+        self.logging = None
         if args.logging:
-            csv_logger = CSVLogger(filename=utils.make_path(args.logging, "%s-%s_%s.csv" % (args.d, self.model_name, datetime.now())))
-            self.callbacks.append(csv_logger)
+            self.logging = args.logging
 
         self.gpu = None
         if args.gpu:
@@ -80,11 +82,15 @@ class BaseModel(ABC):
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
             metrics=['categorical_accuracy'])
 
-        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size=self.batch_size, n_channels=1,
-                                  dim=self.dimension, n_classes=self.n_labels)
+        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 37, self.dimension[0], self.n_labels, self.dataset)
 
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
-                                dim=self.dimension, n_classes=self.n_labels)
+                                dim=self.dimension, n_classes=self.n_labels, shuffle_data=False)
+
+        if self.logging:
+            csv_logger = CSVLogger(
+                filename=utils.make_path(self.logging, "%s-%s_%s.csv" % (self.dataset, self.model_name, datetime.now())))
+            self.callbacks.append(csv_logger)
 
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (self.model_name, self.dimension, lr)
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
@@ -94,11 +100,11 @@ class BaseModel(ABC):
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=len(train_x) // self.batch_size,
+            steps_per_epoch=len(train_x) // (self.batch_size * self.num_segments),
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
             epochs=epoch_size,
-            workers=self.workers,
+            workers=1,
             use_multiprocessing=use_multiprocessing,
         )
 
@@ -127,3 +133,6 @@ class BaseModel(ABC):
         plt.legend(['train', 'test'], loc='upper left')
         plt.savefig('loss_' + plot_name, bbox_inches='tight')
         plt.clf()
+
+    def calculate_num_segments(self, song_length, input_dim):
+        return song_length // input_dim[0]

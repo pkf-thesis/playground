@@ -9,7 +9,7 @@ from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
 from evaluator import Evaluator
 
-batch_size = 20
+batch_size = 25
 learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
 
 
