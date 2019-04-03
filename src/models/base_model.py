@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Tuple
 import os
+from datetime import datetime
 import multiprocessing
 import numpy as np
 
@@ -8,11 +9,14 @@ import keras
 from keras.utils import multi_gpu_model
 from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
 
+import tensorflow as tf
+
+from sklearn.metrics import roc_auc_score
+
 from matplotlib import pyplot as plt
 
 from data_generator import DataGenerator
 from utils import utils
-from utils.loss_learning_rate_scheduler import LossLearningRateScheduler
 from utils.learning_rate_tracker import LearningRateTracker
 
 
@@ -37,7 +41,7 @@ class BaseModel(ABC):
         self.callbacks.append(LearningRateTracker())
         self.callbacks.append(EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='auto'))
         if args.logging:
-            csv_logger = CSVLogger(filename=utils.make_path(args.logging,self.model_name + '.csv'))
+            csv_logger = CSVLogger(filename=utils.make_path(args.logging, "%s-%s_%s.csv" % (args.d, self.model_name, datetime.now())))
             self.callbacks.append(csv_logger)
 
         self.gpu = None
@@ -77,15 +81,12 @@ class BaseModel(ABC):
         train_model.compile(
             loss=keras.losses.binary_crossentropy,
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
-            metrics=['categorical_accuracy'])
+            metrics=[auroc])
 
-        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size=self.batch_size, n_channels=1,
-                                  dim=self.dimension, n_classes=self.n_labels)
+        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 37, self.dimension[0], self.n_labels, self.dataset)
 
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
-
-        num_train = len(train_x)
 
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (self.model_name, self.dimension, lr)
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
@@ -95,7 +96,7 @@ class BaseModel(ABC):
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=num_train // self.batch_size,
+            steps_per_epoch=len(train_x) // self.batch_size,
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
             epochs=epoch_size,
@@ -117,6 +118,7 @@ class BaseModel(ABC):
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
         plt.savefig('acc_' + plot_name, bbox_inches='tight')
+        plt.clf()
 
         # summarize history for loss
         plt.plot(history.history['loss'])
@@ -126,5 +128,8 @@ class BaseModel(ABC):
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
         plt.savefig('loss_' + plot_name, bbox_inches='tight')
-
         plt.clf()
+
+
+def auroc(y_true, y_pred):
+    return tf.py_func(roc_auc_score, (y_true, y_pred), tf.double)

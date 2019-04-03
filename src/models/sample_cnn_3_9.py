@@ -50,7 +50,7 @@ class SampleCNN39(BaseModel):
 
         return x, y
 
-    def build_model(self):
+    def build_model_2(self):
         activ = 'relu'
         init = 'he_uniform'
 
@@ -117,11 +117,11 @@ class SampleCNN39(BaseModel):
 
         return model
 
-    def build_model_2(self):
+    def build_model(self):
         model = Sequential()
 
         #First layer
-        model.add(Conv1D(128, kernel_size=3, strides=3, padding='same', activation='relu', input_shape=self.input_shape))
+        model.add(Conv1D(128, kernel_size=3, strides=3, padding='valid', activation='relu', input_shape=self.input_shape))
         model.add(BatchNormalization())
 
         #Second layer
