@@ -89,6 +89,8 @@ if __name__ == '__main__':
         weight_name = 'best_weights_%s_%s_%s.hdf5' % (base_model.model_name, base_model.dimension, lr)
         model.load_weights(weight_name)
 
+        print("Testing")
+
         'Evaluate model'
         # (test_x, test_y) = sql.fetchTagsFromSongs(test)
         evaluator.evaluate(base_model, model, x_test, y_test)

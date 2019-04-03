@@ -9,11 +9,14 @@ import keras
 from keras.utils import multi_gpu_model
 from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
 
+import tensorflow as tf
+
+from sklearn.metrics import roc_auc_score
+
 from matplotlib import pyplot as plt
 
 from data_generator import DataGenerator
 from utils import utils
-from utils.loss_learning_rate_scheduler import LossLearningRateScheduler
 from utils.learning_rate_tracker import LearningRateTracker
 
 
@@ -78,10 +81,9 @@ class BaseModel(ABC):
         train_model.compile(
             loss=keras.losses.binary_crossentropy,
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
-            metrics=['categorical_accuracy'])
+            metrics=[auroc])
 
-        train_gen = DataGenerator(self.transform_data, train_x, train_y, batch_size=self.batch_size, n_channels=1,
-                                  dim=self.dimension, n_classes=self.n_labels)
+        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 37, self.dimension[0], self.n_labels, self.dataset)
 
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
@@ -127,3 +129,7 @@ class BaseModel(ABC):
         plt.legend(['train', 'test'], loc='upper left')
         plt.savefig('loss_' + plot_name, bbox_inches='tight')
         plt.clf()
+
+
+def auroc(y_true, y_pred):
+    return tf.py_func(roc_auc_score, (y_true, y_pred), tf.double)
