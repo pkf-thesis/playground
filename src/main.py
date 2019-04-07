@@ -9,7 +9,7 @@ from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
 from evaluator import Evaluator
 
-batch_size = 20
+batch_size = 37
 learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
 
 
@@ -80,18 +80,24 @@ if __name__ == '__main__':
         os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))
 
     evaluator = Evaluator(batch_size=batch_size)
+    output = open("results.txt", "w")
+    for i in range(0, 5):
+        output.write("### %s TRAIL ### \n" % i)
+        for lr in learning_rates:
+            weight_name = '%s_best_weights_%s_%s_%s.hdf5' % (i, base_model.model_name, base_model.dimension, lr)
 
-    for lr in learning_rates:
+            'Train'
+            model = base_model.train(weight_name, x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
 
-        'Train'
-        model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+            model.load_weights(weight_name)
 
-        weight_name = 'best_weights_%s_%s_%s.hdf5' % (base_model.model_name, base_model.dimension, lr)
-        model.load_weights(weight_name)
+            print("Testing")
 
-        print("Testing")
+            'Evaluate model'
+            # evaluator.evaluate(base_model, model, x_test, y_test)
+            x_pred = evaluator.predict(base_model, model, x_test)
 
-        'Evaluate model'
-        # (test_x, test_y) = sql.fetchTagsFromSongs(test)
-        evaluator.evaluate(base_model, model, x_test, y_test)
+            test_result = evaluator.mean_roc_auc(x_pred, y_test)
+            print("Mean ROC-AUC: %s" % test_result)
+            output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 

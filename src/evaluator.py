@@ -1,9 +1,11 @@
 from typing import List
 
-from models.base_model import BaseModel
-from data_generator import DataGenerator
 from sklearn.metrics import roc_auc_score
 import numpy as np
+
+from models.base_model import BaseModel
+from data_generator import DataGenerator
+from utils import utils
 
 
 class Evaluator:
@@ -28,15 +30,35 @@ class Evaluator:
         # prediction = model.predict(song)
         # print(prediction)
 
+    def predict(self, base_model: BaseModel, model, x_test:List[str]):
+        sample_length = base_model.dimension[0]
+        num_segments = utils.calculate_num_segments(sample_length)
+
+        x_test_temp = np.zeros((num_segments, sample_length, 1))
+        x_pred = np.zeros((len(x_test), base_model.n_labels))
+
+        for i, song_id in enumerate(x_test):
+            song = np.load(base_model.path % (base_model.dataset, song_id))['arr_0']
+
+            for segment in range(0, num_segments):
+                x_test_temp[segment] = song[segment * sample_length:
+                                            segment * sample_length + sample_length].reshape((-1, 1))
+
+            x_pred[i] = np.mean(model.predict(x_test_temp), axis=0)
+
+        return x_pred
+
     # Example
     # predictions   = array([[0.54, 0.98, 0.43], [0.32, 0.18, 0.78], [0.78, 0.76, 0.86]])
     # truths        = array([[1, 1, 0], [0, 0, 1], [1, 1, 0]])
     # mean_roc_auc  = 0.66
-    def mean_roc_auc(predictions, truths):
-        n_predictions = len(predictions)
-        auc = np.zeros(n_predictions)
-        for index in range(n_predictions):
+    def mean_roc_auc(self, predictions, truths):
+        num_predictions = len(predictions)
+        auc = np.zeros(num_predictions)
+
+        for index in range(num_predictions):
             prediction = predictions[index]
             truth = truths[index]
             auc[index] = roc_auc_score(truth, prediction)
+
         return np.mean(auc)
