@@ -14,11 +14,14 @@ from matplotlib import pyplot as plt
 from data_generator import DataGenerator
 from utils import utils
 from utils.learning_rate_tracker import LearningRateTracker
+from utils.roc_auc_callback import ROCAUCCallback
 
 
 class BaseModel(ABC):
 
     def __init__(self, song_length: int, dim, n_channels: int, batch_size: int, args):
+        self.path = "../sdb/data/%s/%s.npz"
+
         self.song_length = song_length
         self.dimension = dim
         self.n_channels = n_channels
@@ -56,7 +59,7 @@ class BaseModel(ABC):
     def build_model(self):
         raise NotImplementedError
 
-    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr) -> None:
+    def train(self, weight_name, train_x, train_y, valid_x, valid_y, epoch_size, lr) -> None:
 
         # Save model
         json_name = 'model_architecture_%s_%s.6f.json' % (self.model_name, lr)
@@ -79,20 +82,21 @@ class BaseModel(ABC):
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
             metrics=['accuracy'])
 
-        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 37, self.dimension[0], self.n_labels, self.dataset)
+        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 37, self.dimension[0], self.n_labels,
+                                          self.dataset, self.path)
 
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
-        weight_name = 'best_weights_%s_%s_%s.hdf5' % (self.model_name, self.dimension, lr)
         check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0, save_best_only=True, mode='auto',
                                         save_weights_only=True)
         self.callbacks.append(check_pointer)
+        self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))
 
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=len(train_x) // self.batch_size,
+            steps_per_epoch=len(train_x) // self.batch_size * utils.calculate_num_segments(self.dimension[0]),
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
             epochs=epoch_size,
@@ -107,8 +111,8 @@ class BaseModel(ABC):
     def _plot_training(self, history, lr):
         plot_name = '%s_%s_%s.png' % (self.model_name, lr, self.dataset)
         # summarize history for accuracy
-        plt.plot(history.history['categorical_accuracy'])
-        plt.plot(history.history['val_categorical_accuracy'])
+        plt.plot(history.history['acc'])
+        plt.plot(history.history['val_acc'])
         plt.title('model accuracy')
         plt.ylabel('accuracy')
         plt.xlabel('epoch')

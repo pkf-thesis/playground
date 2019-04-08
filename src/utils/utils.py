@@ -12,7 +12,7 @@ def calculate_num_segments(sample_length):
     return 640512 // sample_length
 
 
-def train_generator(train_list, y_train_init, batch_size, song_batch, sample_length, num_tags, dataset):
+def train_generator(train_list, y_train_init, batch_size, song_batch, sample_length, num_tags, dataset, path):
     i = 0
     j = 0
 
@@ -39,7 +39,7 @@ def train_generator(train_list, y_train_init, batch_size, song_batch, sample_len
             '''
 
             # load x_train
-            tmp = np.load("../sdb/data/%s/%s.npz" % (dataset, train_list[subset_size_index * song_batch + i]))['arr_0']
+            tmp = np.load(path % (dataset, train_list[subset_size_index * song_batch + i]))['arr_0']
 
             for num_segments_index in range(0, num_segments):
                 x_train_sub[num_segments * subset_size_index + num_segments_index, :, 0] = \
