@@ -104,4 +104,4 @@ class Evaluator:
         plt.tight_layout()
         plt.ylabel('True label')
         plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
-        plt.show()
+        plt.savefig("confusion_matrix.png", bbox_inches="tight")
