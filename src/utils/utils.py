@@ -33,13 +33,20 @@ def train_generator(train_list, y_train_init, batch_size, song_batch, sample_len
             '''	
             # for debugging
             if iter == 0:
-                print '\n'+str(iter*options.partition+i)
+                print '\n'+str(subset_size_index * subset_size + i)
             else:
-                print iter*options.partition+i,iter,i
+                print subset_size_index * subset_size + i, subset_size_index, i
             '''
 
-            # load x_train
-            tmp = np.load(path % (dataset, train_list[subset_size_index * song_batch + i]))['arr_0']
+            '''
+            If we are trying to load a song which is outside our list, 
+            this can happen if song_batch does not add up to the length of our train samples
+            '''
+            try:
+                # load x_train
+                tmp = np.load(path % (dataset, train_list[subset_size_index * song_batch + i]))['arr_0']
+            except:
+                break
 
             for num_segments_index in range(0, num_segments):
                 x_train_sub[num_segments * subset_size_index + num_segments_index, :, 0] = \
@@ -70,18 +77,18 @@ def train_generator(train_list, y_train_init, batch_size, song_batch, sample_len
                 y_train_sub_batch[batch_index] = y_train_sub[
                                                  int(batch_index * subset_size * num_segments / batch_size) + j, :]
 
-                '''	
+                """
                 # for debugging
-                if iter3 == 0:
-                    print '\n'+str(iter3*subset_size*num_segment/batch_size+j)
+                if batch_index == 0:
+                    print('\n'+str(batch_index * subset_size * num_segments / batch_size + j))
                 else:
-                    print iter3*subset_size*num_segment/batch_size+j
-                '''
+                    print(batch_index * subset_size * num_segments / batch_size + j)
+                """
 
             j = j + 1
             yield (x_train_sub_batch, y_train_sub_batch)
 
-        if j == subset_size * num_segments / batch_size:
+        if j == int(subset_size * num_segments / batch_size):
             j = 0
         i = i + 1
         if i == song_batch:
