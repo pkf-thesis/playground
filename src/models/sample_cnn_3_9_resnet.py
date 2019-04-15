@@ -15,9 +15,9 @@ from keras.layers import BatchNormalization
 from keras.layers.merge import add
 from keras import backend as K
 
-class SampleCNN39(BaseModel):
+class SampleCNN39ResNet(BaseModel):
 
-    model_name = "SampleCNN_3_9"
+    model_name = "SampleCNN_3_9_resnet"
 
     input_dim = 3 * 3 ** 9
     overlap = 0
@@ -53,7 +53,32 @@ class SampleCNN39(BaseModel):
 
         return x, y
 
-    def build_model_2(self):
+    def shortcut(input, residual):
+    """Adds a shortcut between input and residual block and merges them with "sum"
+    """
+    # Expand channels of shortcut to match residual.
+    # Stride appropriately to match residual (width, height)
+    # Should be int if network architecture is correctly configured.
+    channel = 2
+    step = 1
+    input_shape = K.int_shape(input)
+    residual_shape = K.int_shape(residual)
+    stride = int(round(input_shape[step] / residual_shape[step]))
+    equal_channels = input_shape[channel] == residual_shape[channel]
+
+    shortcut = input
+    # 1 X 1 conv if shape is different. Else identity.
+    if stride > 1 or not equal_channels:
+        shortcut = Conv1D(filters=residual_shape[channel],
+                          kernel_size=(1, 1),
+                          strides=stride,
+                          padding="valid",
+                          kernel_initializer="he_normal",
+                          kernel_regularizer=l2(0.0001))(input)
+
+    return add([shortcut, residual])
+
+    def build_model(self):
         activ = 'relu'
         init = 'he_uniform'
 
@@ -73,7 +98,9 @@ class SampleCNN39(BaseModel):
         activ2 = Activation(activ)(bn2)
         MP2 = MaxPooling1D(pool_length=3)(activ2)
 
-        conv3 = Convolution1D(256, 3, border_mode='same', init=init)(MP2)
+        residual1 = shortcut(activ0, MP2)
+
+        conv3 = Convolution1D(256, 3, border_mode='same', init=init)(residual1)
         bn3 = BatchNormalization()(conv3)
         activ3 = Activation(activ)(bn3)
         MP3 = MaxPooling1D(pool_length=3)(activ3)
@@ -83,7 +110,9 @@ class SampleCNN39(BaseModel):
         activ4 = Activation(activ)(bn4)
         MP4 = MaxPooling1D(pool_length=3)(activ4)
 
-        conv5 = Convolution1D(256, 3, border_mode='same', init=init)(MP4)
+        residual2 = shortcut(residual1, MP4)
+
+        conv5 = Convolution1D(256, 3, border_mode='same', init=init)(residual2)
         bn5 = BatchNormalization()(conv5)
         activ5 = Activation(activ)(bn5)
         MP5 = MaxPooling1D(pool_length=3)(activ5)
@@ -92,6 +121,8 @@ class SampleCNN39(BaseModel):
         bn6 = BatchNormalization()(conv6)
         activ6 = Activation(activ)(bn6)
         MP6 = MaxPooling1D(pool_length=3)(activ6)
+
+        residual3 = shortcut(residual2, MP6)
 
         conv7 = Convolution1D(256, 3, border_mode='same', init=init)(MP6)
         bn7 = BatchNormalization()(conv7)
@@ -102,6 +133,8 @@ class SampleCNN39(BaseModel):
         bn8 = BatchNormalization()(conv8)
         activ8 = Activation(activ)(bn8)
         MP8 = MaxPooling1D(pool_length=3)(activ8)
+
+        residual4 = shortcut(residual3, MP8)
 
         conv9 = Convolution1D(512, 3, border_mode='same', init=init)(MP8)
         bn9 = BatchNormalization()(conv9)
@@ -117,69 +150,6 @@ class SampleCNN39(BaseModel):
 
         output = Dense(self.n_labels, activation='sigmoid')(Flattened)
         model = Model(input=pool_input, output=output)
-
-        return model
-
-    def build_model(self):
-        model = Sequential()
-
-        #First layer
-        model.add(Conv1D(128, kernel_size=3, strides=3, padding='valid', activation='relu', input_shape=self.input_shape))
-        model.add(BatchNormalization())
-
-        #Second layer
-        model.add(Conv1D(128, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Third layer
-        model.add(Conv1D(128, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Fourth layer
-        model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Fith layer
-        model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Sixth layer
-        model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Seventh layer
-        model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Eigth layer
-        model.add(Conv1D(256, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Ninth layer
-        model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Tenth layer
-        model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Eleventh layer
-        model.add(Conv1D(512, 1, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.5))
-
-        #Twelveth layer
-        model.add(Flatten())
-        model.add(Dense(self.n_labels, activation='sigmoid'))
 
         return model
 
