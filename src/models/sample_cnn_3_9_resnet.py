@@ -124,7 +124,7 @@ class SampleCNN39ResNet(BaseModel):
 
         residual3 = shortcut(residual2, MP6)
 
-        conv7 = Convolution1D(256, 3, border_mode='same', init=init)(MP6)
+        conv7 = Convolution1D(256, 3, border_mode='same', init=init)(residual3)
         bn7 = BatchNormalization()(conv7)
         activ7 = Activation(activ)(bn7)
         MP7 = MaxPooling1D(pool_length=3)(activ7)
@@ -136,7 +136,7 @@ class SampleCNN39ResNet(BaseModel):
 
         residual4 = shortcut(residual3, MP8)
 
-        conv9 = Convolution1D(512, 3, border_mode='same', init=init)(MP8)
+        conv9 = Convolution1D(512, 3, border_mode='same', init=init)(residual4)
         bn9 = BatchNormalization()(conv9)
         activ9 = Activation(activ)(bn9)
         MP9 = MaxPooling1D(pool_length=3)(activ9)
