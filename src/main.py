@@ -85,23 +85,22 @@ if __name__ == '__main__':
                                  weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
     print('Train first learning rate')
-    # lr = learning_rates[0]
-    # model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
-    #
-    # print("Testing")
-    # x_pred = evaluator.predict(base_model, model, x_test, lr)
-    #
-    # 'Save predictions'
-    # np.save("../results/predictions_%s_%s.npy" % (args.d, lr), x_pred)
-    #
-    # test_result = evaluator.mean_roc_auc(x_pred, y_test)
-    # print("Mean ROC-AUC: %s" % test_result)
-    # output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+    lr = learning_rates[0]
+    model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+
+    print("Testing")
+    x_pred = evaluator.predict(base_model, model, x_test, lr)
+
+    'Save predictions'
+    np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
+
+    test_result = evaluator.mean_roc_auc(x_pred, y_test)
+    print("Mean ROC-AUC: %s" % test_result)
+    output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 
     'For each learning rate'
     for lr_index in range(1, len(learning_rates)):
         lr = learning_rates[lr_index]
-
         if args.local:
             base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
                                     weight_name='../results/best_weights_%s_%s.hdf5', args=args)
@@ -114,12 +113,12 @@ if __name__ == '__main__':
                                    lr_prev=learning_rates[lr_index-1])
 
         print("Testing")
-        x_pred = evaluator.predict(base_model, model, x_test)
+        x_pred = evaluator.predict(base_model, model, x_test, lr)
 
         'Save predictions'
         np.save("../results/predictions_%s_%s.npy" % (args.d, lr), x_pred)
 
-        test_result = evaluator.mean_roc_auc(x_pred, y_test, lr)
+        test_result = evaluator.mean_roc_auc(x_pred, y_test)
         print("Mean ROC-AUC: %s" % test_result)
         output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 

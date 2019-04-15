@@ -3,10 +3,6 @@ from typing import List
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 
-import matplotlib
-matplotlib.use("TkAgg")
-from matplotlib import pyplot as plt
-
 import itertools
 import numpy as np
 
@@ -38,8 +34,10 @@ class Evaluator:
         # print(prediction)
 
     def predict(self, base_model: BaseModel, model, x_test: List[str], lr):
-        'Load best weights'
-        model.load_weights(base_model.weight_name % (base_model.model_name, lr))
+
+        """Load best weights"""
+        if lr is not None:
+            model.load_weights(base_model.weight_name % (base_model.model_name, lr))
 
         sample_length = base_model.dimension[0]
         num_segments = utils.calculate_num_segments(sample_length)
@@ -78,7 +76,7 @@ class Evaluator:
     labels = ["high", "medium", "low"]
     plot_confusion_matrix(predictions, truths, labels)
     """
-
+    """
     def plot_confusion_matrix(predictions, truths, target_names, title='Confusion matrix', cmap=None, normalize=True):
         cm = confusion_matrix(truths, predictions)
         accuracy = np.trace(cm) / float(np.sum(cm))
@@ -108,3 +106,4 @@ class Evaluator:
         plt.ylabel('True label')
         plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
         plt.savefig("confusion_matrix.png", bbox_inches="tight")
+        """
