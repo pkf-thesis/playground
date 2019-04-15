@@ -53,7 +53,7 @@ class SampleCNN39ResNet(BaseModel):
 
         return x, y
 
-    def shortcut(input, residual):
+    def _shortcut(self, input, residual):
         channel = 2
         step = 1
         input_shape = K.int_shape(input)
@@ -93,7 +93,7 @@ class SampleCNN39ResNet(BaseModel):
         activ2 = Activation(activ)(bn2)
         MP2 = MaxPooling1D(pool_length=3)(activ2)
 
-        residual1 = self.shortcut(activ0, MP2)
+        residual1 = self._shortcut(activ0, MP2)
 
         conv3 = Convolution1D(256, 3, border_mode='same', init=init)(residual1)
         bn3 = BatchNormalization()(conv3)
@@ -105,7 +105,7 @@ class SampleCNN39ResNet(BaseModel):
         activ4 = Activation(activ)(bn4)
         MP4 = MaxPooling1D(pool_length=3)(activ4)
 
-        residual2 = self.shortcut(residual1, MP4)
+        residual2 = self._shortcut(residual1, MP4)
 
         conv5 = Convolution1D(256, 3, border_mode='same', init=init)(residual2)
         bn5 = BatchNormalization()(conv5)
@@ -117,7 +117,7 @@ class SampleCNN39ResNet(BaseModel):
         activ6 = Activation(activ)(bn6)
         MP6 = MaxPooling1D(pool_length=3)(activ6)
 
-        residual3 = self.shortcut(residual2, MP6)
+        residual3 = self._shortcut(residual2, MP6)
 
         conv7 = Convolution1D(256, 3, border_mode='same', init=init)(residual3)
         bn7 = BatchNormalization()(conv7)
@@ -129,7 +129,7 @@ class SampleCNN39ResNet(BaseModel):
         activ8 = Activation(activ)(bn8)
         MP8 = MaxPooling1D(pool_length=3)(activ8)
 
-        residual4 = self.shortcut(residual3, MP8)
+        residual4 = self._shortcut(residual3, MP8)
 
         conv9 = Convolution1D(512, 3, border_mode='same', init=init)(residual4)
         bn9 = BatchNormalization()(conv9)
