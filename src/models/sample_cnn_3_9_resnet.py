@@ -14,6 +14,7 @@ from keras.layers import BatchNormalization
 
 from keras.layers.merge import add
 from keras import backend as K
+from keras.regularizers import l2
 
 class SampleCNN39ResNet(BaseModel):
 
