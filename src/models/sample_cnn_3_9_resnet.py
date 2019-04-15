@@ -54,29 +54,24 @@ class SampleCNN39ResNet(BaseModel):
         return x, y
 
     def shortcut(input, residual):
-    """Adds a shortcut between input and residual block and merges them with "sum"
-    """
-    # Expand channels of shortcut to match residual.
-    # Stride appropriately to match residual (width, height)
-    # Should be int if network architecture is correctly configured.
-    channel = 2
-    step = 1
-    input_shape = K.int_shape(input)
-    residual_shape = K.int_shape(residual)
-    stride = int(round(input_shape[step] / residual_shape[step]))
-    equal_channels = input_shape[channel] == residual_shape[channel]
+        channel = 2
+        step = 1
+        input_shape = K.int_shape(input)
+        residual_shape = K.int_shape(residual)
+        stride = int(round(input_shape[step] / residual_shape[step]))
+        equal_channels = input_shape[channel] == residual_shape[channel]
 
-    shortcut = input
-    # 1 X 1 conv if shape is different. Else identity.
-    if stride > 1 or not equal_channels:
-        shortcut = Conv1D(filters=residual_shape[channel],
-                          kernel_size=(1, 1),
-                          strides=stride,
-                          padding="valid",
-                          kernel_initializer="he_normal",
-                          kernel_regularizer=l2(0.0001))(input)
+        shortcut = input
+        # 1 X 1 conv if shape is different. Else identity.
+        if stride > 1 or not equal_channels:
+            shortcut = Conv1D(filters=residual_shape[channel],
+                            kernel_size=(1, 1),
+                            strides=stride,
+                            padding="valid",
+                            kernel_initializer="he_normal",
+                            kernel_regularizer=l2(0.0001))(input)
 
-    return add([shortcut, residual])
+        return add([shortcut, residual])
 
     def build_model(self):
         activ = 'relu'
