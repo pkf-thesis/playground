@@ -9,7 +9,7 @@ from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
 from evaluator import Evaluator
 
-batch_size = 37
+batch_size = 25
 learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
 
 
@@ -70,34 +70,57 @@ if __name__ == '__main__':
 
     x_train, y_train, x_valid, y_valid, x_test, y_test = get_data(args)
 
+    evaluator = Evaluator(batch_size=batch_size)
+
+    output = open("../results/results.txt", "a")
+
+    'First learning rate'
+
     'Initiate model'
     if args.local:
-        base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size, args=args)
+        base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
+                                weight_name='../results/best_weights_%s_%s.hdf5', args=args)
     else:
-        base_model = SampleCNN39(640512, dim=(3 * 3**9,), n_channels=1, batch_size=batch_size, args=args)
+        base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
+                                 weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
-    if not os.path.exists(args.logging):
-        os.makedirs(os.path.dirname(args.logging + base_model.model_name + '.csv'))
+    print('Train first learning rate')
+    # lr = learning_rates[0]
+    # model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+    #
+    # print("Testing")
+    # x_pred = evaluator.predict(base_model, model, x_test, lr)
+    #
+    # 'Save predictions'
+    # np.save("../results/predictions_%s_%s.npy" % (args.d, lr), x_pred)
+    #
+    # test_result = evaluator.mean_roc_auc(x_pred, y_test)
+    # print("Mean ROC-AUC: %s" % test_result)
+    # output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 
-    evaluator = Evaluator(batch_size=batch_size)
-    output = open("results.txt", "w")
-    for i in range(0, 5):
-        output.write("### %s TRAIL ### \n" % i)
-        for lr in learning_rates:
-            weight_name = '%s_best_weights_%s_%s_%s.hdf5' % (i, base_model.model_name, base_model.dimension, lr)
+    'For each learning rate'
+    for lr_index in range(1, len(learning_rates)):
+        lr = learning_rates[lr_index]
 
-            'Train'
-            model = base_model.train(weight_name, x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+        if args.local:
+            base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
+                                    weight_name='../results/best_weights_%s_%s.hdf5', args=args)
+        else:
+            base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
+                                     weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
-            model.load_weights(weight_name)
+        print('Train %s' % lr)
+        model = base_model.retrain(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr,
+                                   lr_prev=learning_rates[lr_index-1])
 
-            print("Testing")
+        print("Testing")
+        x_pred = evaluator.predict(base_model, model, x_test)
 
-            'Evaluate model'
-            # evaluator.evaluate(base_model, model, x_test, y_test)
-            x_pred = evaluator.predict(base_model, model, x_test)
+        'Save predictions'
+        np.save("../results/predictions_%s_%s.npy" % (args.d, lr), x_pred)
 
-            test_result = evaluator.mean_roc_auc(x_pred, y_test)
-            print("Mean ROC-AUC: %s" % test_result)
-            output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+        test_result = evaluator.mean_roc_auc(x_pred, y_test, lr)
+        print("Mean ROC-AUC: %s" % test_result)
+        output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 
+    output.close()

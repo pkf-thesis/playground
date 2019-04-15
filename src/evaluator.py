@@ -37,7 +37,10 @@ class Evaluator:
         # prediction = model.predict(song)
         # print(prediction)
 
-    def predict(self, base_model: BaseModel, model, x_test:List[str]):
+    def predict(self, base_model: BaseModel, model, x_test: List[str], lr):
+        'Load best weights'
+        model.load_weights(base_model.weight_name % (base_model.model_name, lr))
+
         sample_length = base_model.dimension[0]
         num_segments = utils.calculate_num_segments(sample_length)
 
