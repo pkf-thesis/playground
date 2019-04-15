@@ -66,7 +66,7 @@ class SampleCNN39ResNet(BaseModel):
         # 1 X 1 conv if shape is different. Else identity.
         if stride > 1 or not equal_channels:
             shortcut = Conv1D(filters=residual_shape[channel],
-                            kernel_size=(1, 1),
+                            kernel_size=1,
                             strides=stride,
                             padding="valid",
                             kernel_initializer="he_normal",
