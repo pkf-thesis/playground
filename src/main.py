@@ -7,6 +7,7 @@ import numpy as np
 import music_to_npy_convertor, train_test_divider
 from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
+from models.sample_cnn_3_9_resnet import SampleCNN39ResNet
 from evaluator import Evaluator
 
 batch_size = 25
@@ -81,7 +82,7 @@ if __name__ == '__main__':
         base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
                                 weight_name='../results/best_weights_%s_%s.hdf5', args=args)
     else:
-        base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
+        base_model = SampleCNN39ResNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
                                  weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
     print('Train first learning rate')
@@ -105,7 +106,7 @@ if __name__ == '__main__':
             base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
                                     weight_name='../results/best_weights_%s_%s.hdf5', args=args)
         else:
-            base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
+            base_model = SampleCNN39ResNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
                                      weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
         print('Train %s' % lr)
