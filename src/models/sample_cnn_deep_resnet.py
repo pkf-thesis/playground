@@ -16,9 +16,9 @@ from keras.layers.merge import add
 from keras import backend as K
 from keras.regularizers import l2
 
-class SampleCNN39ResNet(BaseModel):
+class SampleCNNDeepResNet(BaseModel):
 
-    model_name = "SampleCNN_3_9_resnet"
+    model_name = "SampleCNN_deep_resnet"
 
     input_dim = 3 * 3 ** 9
     overlap = 0
