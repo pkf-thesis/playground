@@ -15,12 +15,62 @@ from keras.layers import BatchNormalization
 from keras.layers.merge import add
 from keras import backend as K
 
+from utils.utils import calculate_num_segments
+
+
 class SampleCNN39(BaseModel):
 
     model_name = "SampleCNN_3_9"
 
     input_dim = 3 * 3 ** 9
     overlap = 0
+
+    def transform_data(self, ids_temp: List[str], labels_temp, batch_size: int) -> Tuple[np.array, np.array]:
+        num_segments = calculate_num_segments(self.input_dim)
+        new_batch_size = batch_size * num_segments
+
+        # Initialization
+        x = np.empty((new_batch_size, *self.dimension, self.n_channels), dtype='float32')
+        y = np.empty((new_batch_size, len(labels_temp[0])))
+
+        count = 0
+        # Generate data
+        for i, song_id in enumerate(ids_temp):
+            song = np.load("../sdb/data/%s/%s.npz" % (self.dataset, song_id))
+
+            song_temp = None
+            try:
+                song_temp = song['arr_0']
+            except:
+                print(song_id)
+
+            # Convert song to sub songs
+            sub_signals = self.split_song(song_temp, num_segments)
+
+            for sub_song in sub_signals:
+                sub_song = sub_song.reshape((-1, 1))
+                x[count,] = sub_song
+                y[count] = labels_temp[i]
+
+                count += 1
+
+        return x, y
+
+    def split_song(self, song, num_segments):
+        # Empty list to hold data
+        temp_song = []
+
+        # Get the input songs array size
+        x_shape = song.shape[0]
+        chunk = self.input_dim
+
+        # Split song and create sub samples
+        splitted_song = [song[i*chunk: i*chunk+chunk] for i in range(0, num_segments)]
+        for sub_song in splitted_song:
+            if len(sub_song) == chunk:
+                temp_song.append(sub_song)
+
+        return np.array(temp_song)
 
     def build_model_2(self):
         activ = 'relu'

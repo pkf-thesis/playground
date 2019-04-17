@@ -2,8 +2,6 @@ from typing import List, Tuple
 import numpy as np
 from keras import Input, Model
 
-from models.base_model import BaseModel
-
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Convolution1D
 from keras.layers import Conv1D
@@ -16,6 +14,10 @@ from keras.layers.merge import add
 from keras import backend as K
 from keras.regularizers import l2
 
+from utils.utils import calculate_num_segments
+from models.base_model import BaseModel
+
+
 class SampleCNNDeepResNet(BaseModel):
 
     model_name = "SampleCNN_deep_resnet"
@@ -24,7 +26,7 @@ class SampleCNNDeepResNet(BaseModel):
     overlap = 0
 
     def transform_data(self, ids_temp: List[str], labels_temp, batch_size: int) -> Tuple[np.array, np.array]:
-        num_segments = self.calculate_num_segments(self.song_length, self.input_dim)
+        num_segments = calculate_num_segments(self.song_length, self.input_dim)
         new_batch_size = batch_size * num_segments
 
         # Initialization
@@ -148,6 +150,3 @@ class SampleCNNDeepResNet(BaseModel):
                 temp_song.append(sub_song)
 
         return np.array(temp_song)
-
-    def calculate_num_segments(self, song, input):
-        return song // input
