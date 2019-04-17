@@ -3,7 +3,6 @@ from typing import List
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 
-import itertools
 import numpy as np
 
 from models.base_model import BaseModel
@@ -34,7 +33,6 @@ class Evaluator:
         # print(prediction)
 
     def predict(self, base_model: BaseModel, model, x_test: List[str], lr):
-
         """Load best weights"""
         if lr is not None:
             model.load_weights(base_model.weight_name % (base_model.model_name, lr))
