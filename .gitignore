@@ -90,6 +90,10 @@ ENV/
 env.bak/
 venv.bak/
 
+# intellij
+.idea/
+playground.iml
+
 # Spyder project settings
 .spyderproject
 .spyproject

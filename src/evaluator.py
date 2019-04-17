@@ -60,12 +60,18 @@ class Evaluator:
     # mean_roc_auc  = 0.66
     def mean_roc_auc(self, predictions, truths):
         num_predictions = len(predictions)
-        auc = np.zeros(num_predictions)
-
-        for index in range(num_predictions):
-            prediction = predictions[index]
-            truth = truths[index]
-            auc[index] = roc_auc_score(truth, prediction)
+        n_labels = len(truths[0])
+        auc = np.zeros(n_labels)
+        labelTruths = np.zeros((n_labels, num_predictions))
+        labelPredictions = np.zeros((n_labels, num_predictions))
+        for labelIndex in range(n_labels):
+            for index in range(num_predictions):
+                labelPredictions[labelIndex, index] = predictions[index, labelIndex]
+                labelTruths[labelIndex, index] = truths[index, labelIndex]
+        for i in range(n_labels):
+            truths = labelTruths[i]
+            predictions = labelPredictions[i]
+            auc[i] = roc_auc_score(truths, predictions)
         return np.mean(auc)
 
     """
