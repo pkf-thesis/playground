@@ -1,85 +1,67 @@
 from typing import List
 
 from sklearn.metrics import roc_auc_score
-from sklearn.metrics import confusion_matrix
 
 import numpy as np
 
-from models.base_model import BaseModel
-from data_generator import DataGenerator
-from utils import utils
+from src.models.base_model import BaseModel
+from src.data_generator import DataGenerator
+from src.utils import utils
 
 
-class Evaluator:
+def evaluate(base_model: BaseModel, model, x_test: List[str], y_test: List[str]) -> None:
+    test_generator = DataGenerator(base_model.transform_data, x_test, y_test, batch_size=25,
+                                   dim=base_model.dimension, n_channels=base_model.n_channels,
+                                   n_classes=base_model.n_labels)
 
-    def __init__(self, batch_size):
-        self.batch_size = batch_size
-    
-    def evaluate(self, base_model: BaseModel, model, x_test: List[str], y_test: List[str]) -> None:
+    score = model.evaluate_generator(test_generator, len(x_test) / 5)
+    print("val_loss = {:.3f} and val_acc = {:.3f}".format(score[0], score[1]))
 
-        test_generator = DataGenerator(base_model.transform_data, x_test, y_test, batch_size=self.batch_size,
-                                  dim=base_model.dimension, n_channels=base_model.n_channels, n_classes=base_model.n_labels)
 
-        score = model.evaluate_generator(test_generator, len(x_test) / 5)
-        print("val_loss = {:.3f} and val_acc = {:.3f}".format(score[0], score[1]))
+def predict(base_model: BaseModel, model, x_test: List[str], lr):
+    """Load best weights"""
+    if lr is not None:
+        model.load_weights(base_model.weight_name % (base_model.model_name, lr))
 
-        # Testing predict
-        # song = np.load('../npys/blues.00015.npy')
-        # song = song[0:3 * 3 ** 9]
-        # song = song.reshape((-1, 1))
-        # print(song.shape)
-        # song = song.reshape(1, 3 * 3**9, 1)
-        # prediction = model.predict(song)
-        # print(prediction)
+    sample_length = base_model.dimension[0]
+    num_segments = utils.calculate_num_segments(sample_length)
 
-    def predict(self, base_model: BaseModel, model, x_test: List[str], lr):
-        """Load best weights"""
-        if lr is not None:
-            model.load_weights(base_model.weight_name % (base_model.model_name, lr))
+    x_test_temp = np.zeros((num_segments, sample_length, 1))
+    x_pred = np.zeros((len(x_test), base_model.n_labels))
 
-        sample_length = base_model.dimension[0]
-        num_segments = utils.calculate_num_segments(sample_length)
+    for i, song_id in enumerate(x_test):
+        song = np.load(base_model.path % (base_model.dataset, song_id))['arr_0']
 
-        x_test_temp = np.zeros((num_segments, sample_length, 1))
-        x_pred = np.zeros((len(x_test), base_model.n_labels))
+        for segment in range(0, num_segments):
+            x_test_temp[segment] = song[segment * sample_length:
+                                        segment * sample_length + sample_length].reshape((-1, 1))
 
-        for i, song_id in enumerate(x_test):
-            song = np.load(base_model.path % (base_model.dataset, song_id))['arr_0']
+        x_pred[i] = np.mean(model.predict(x_test_temp), axis=0)
 
-            for segment in range(0, num_segments):
-                x_test_temp[segment] = song[segment * sample_length:
-                                            segment * sample_length + sample_length].reshape((-1, 1))
+    return x_pred
 
-            x_pred[i] = np.mean(model.predict(x_test_temp), axis=0)
 
-        return x_pred
+# Example
+# predictions   = array([[0.54, 0.98, 0.43], [0.32, 0.18, 0.78], [0.78, 0.76, 0.86]])
+# truths        = array([[1, 1, 0], [0, 0, 1], [1, 1, 0]])
+# mean_roc_auc  = 0.66
+def mean_roc_auc(predictions, truths):
+    num_predictions = len(predictions)
+    n_labels = len(truths[0])
+    auc = np.zeros(n_labels)
+    label_truths = np.zeros((n_labels, num_predictions))
+    label_predictions = np.zeros((n_labels, num_predictions))
+    for labelIndex in range(n_labels):
+        for index in range(num_predictions):
+            label_predictions[labelIndex, index] = predictions[index, labelIndex]
+            label_truths[labelIndex, index] = truths[index, labelIndex]
+    for i in range(n_labels):
+        truths = label_truths[i]
+        predictions = label_predictions[i]
+        auc[i] = roc_auc_score(truths, predictions)
+    return np.mean(auc)
 
-    # Example
-    # predictions   = array([[0.54, 0.98, 0.43], [0.32, 0.18, 0.78], [0.78, 0.76, 0.86]])
-    # truths        = array([[1, 1, 0], [0, 0, 1], [1, 1, 0]])
-    # mean_roc_auc  = 0.66
-    def mean_roc_auc(self, predictions, truths):
-        num_predictions = len(predictions)
-        n_labels = len(truths[0])
-        auc = np.zeros(n_labels)
-        labelTruths = np.zeros((n_labels, num_predictions))
-        labelPredictions = np.zeros((n_labels, num_predictions))
-        for labelIndex in range(n_labels):
-            for index in range(num_predictions):
-                labelPredictions[labelIndex, index] = predictions[index, labelIndex]
-                labelTruths[labelIndex, index] = truths[index, labelIndex]
-        for i in range(n_labels):
-            truths = labelTruths[i]
-            predictions = labelPredictions[i]
-            auc[i] = roc_auc_score(truths, predictions)
-        return np.mean(auc)
 
-    """
-    predictions = [0, 0, 2, 2, 0, 2]
-    truths = [2, 0, 2, 2, 0, 1]
-    labels = ["high", "medium", "low"]
-    plot_confusion_matrix(predictions, truths, labels)
-    """
     """
     def plot_confusion_matrix(predictions, truths, target_names, title='Confusion matrix', cmap=None, normalize=True):
         cm = confusion_matrix(truths, predictions)

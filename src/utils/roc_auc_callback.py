@@ -1,8 +1,8 @@
-from sklearn.metrics import roc_auc_score
 from keras.callbacks import Callback
 import numpy as np
 
-from utils import utils
+from src.utils import utils
+import src.evaluator as evaluator
 
 
 class ROCAUCCallback(Callback):
@@ -29,7 +29,7 @@ class ROCAUCCallback(Callback):
         num_segments = utils.calculate_num_segments(self.sample_length)
 
         x_val_temp = np.zeros((num_segments, self.sample_length, 1))
-        x_val = np.zeros((len(self.x_val), self.num_labels))
+        x_pred = np.zeros((len(self.x_val), self.num_labels))
 
         for i, song_id in enumerate(self.x_val):
             song = np.load(self.path % (self.dataset, song_id))['arr_0']
@@ -38,14 +38,9 @@ class ROCAUCCallback(Callback):
                 x_val_temp[segment] = song[segment * self.sample_length:
                                            segment * self.sample_length + self.sample_length].reshape((-1, 1))
 
-            x_val[i] = np.mean(self.model.predict(x_val_temp), axis=0)
+            x_pred[i] = np.mean(self.model.predict(x_val_temp), axis=0)
 
-        auc = np.zeros(len(self.x_val))
-
-        for index in range(len(self.x_val)):
-            prediction = x_val[index]
-            truth = self.y_val[index]
-            auc[index] = roc_auc_score(truth, prediction)
+        auc = evaluator.mean_roc_auc(x_pred, self.y_val)
 
         print('\rroc-auc_val: %s' % (str(np.mean(auc))), end=100 * ' ' + '\n')
         return
