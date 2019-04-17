@@ -75,6 +75,8 @@ class SampleCNNDeepResNet(BaseModel):
         return add([shortcut, residual])
 
     def generateStackedConvolutions(self, input, filters):
+        activ = 'relu'
+        init = 'he_uniform'
         inputLayer = input
         for i in range(3):
             conv = Convolution1D(filters, 3, border_mode='same', init=init)(inputLayer)
