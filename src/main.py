@@ -86,6 +86,7 @@ if __name__ == '__main__':
         base_model = SampleCNNDeepResNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
                                  weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
+    output.write("Testing %s \n" % base_model.model_name)
     print('Train first learning rate')
     lr = learning_rates[0]
     model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
