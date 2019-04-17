@@ -119,7 +119,7 @@ if __name__ == '__main__':
         x_pred = evaluator.predict(base_model, model, x_test, lr)
 
         'Save predictions'
-        np.save("../results/predictions_%s_%s.npy" % (args.d, lr), x_pred)
+        np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
 
         test_result = evaluator.mean_roc_auc(x_pred, y_test)
         print("Mean ROC-AUC: %s" % test_result)
