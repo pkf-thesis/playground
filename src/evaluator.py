@@ -4,12 +4,11 @@ from sklearn.metrics import roc_auc_score
 
 import numpy as np
 
-from models.base_model import BaseModel
 from data_generator import DataGenerator
 from utils import utils
 
 
-def evaluate(base_model: BaseModel, model, x_test: List[str], y_test: List[str]) -> None:
+def evaluate(base_model, model, x_test: List[str], y_test: List[str]) -> None:
     test_generator = DataGenerator(base_model.transform_data, x_test, y_test, batch_size=25,
                                    dim=base_model.dimension, n_channels=base_model.n_channels,
                                    n_classes=base_model.n_labels)
@@ -18,7 +17,7 @@ def evaluate(base_model: BaseModel, model, x_test: List[str], y_test: List[str])
     print("val_loss = {:.3f} and val_acc = {:.3f}".format(score[0], score[1]))
 
 
-def predict(base_model: BaseModel, model, x_test: List[str], lr):
+def predict(base_model, model, x_test: List[str], lr):
     """Load best weights"""
     if lr is not None:
         model.load_weights(base_model.weight_name % (base_model.model_name, lr))

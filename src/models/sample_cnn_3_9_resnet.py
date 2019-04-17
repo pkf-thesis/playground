@@ -1,5 +1,3 @@
-from typing import List, Tuple
-import numpy as np
 from keras import Input, Model
 
 from models.base_model import BaseModel

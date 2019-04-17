@@ -1,8 +1,7 @@
 import os
 import numpy as np
 
-from src import train_test_divider
-
+import train_test_divider as train_test_divider
 
 def make_path(*paths):
     path = os.path.join(*[str(path) for path in paths])
