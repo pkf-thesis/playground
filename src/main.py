@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import time
 
 import src.music_to_npy_convertor, src.train_test_divider as train_test_divider
 from src.models.basic_2d_cnn import Basic2DCNN
@@ -31,10 +32,11 @@ if __name__ == '__main__':
         base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
                                 weight_name='../results/best_weights_%s_%s.hdf5', args=args)
     else:
-        base_model = SampleCNNDeepResNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
+        base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
                                  weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
-    output.write("Testing %s \n" % base_model.model_name)
+    start = time.time()
+    output.write("Start Training %s - %s \n" % (base_model.model_name, start))
     print('Train first learning rate')
     lr = learning_rates[0]
     model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
@@ -72,5 +74,8 @@ if __name__ == '__main__':
         test_result = evaluator.mean_roc_auc(x_pred, y_test)
         print("Mean ROC-AUC: %s" % test_result)
         output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+
+    end = time.time()
+    output.write("End Training %s - %s" % (base_model.model_name, end))
 
     output.close()
