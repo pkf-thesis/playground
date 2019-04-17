@@ -2,7 +2,7 @@ from typing import List, Tuple
 import numpy as np
 from keras import Input, Model
 
-from src.models.base_model import BaseModel
+from models.base_model import BaseModel
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Convolution1D

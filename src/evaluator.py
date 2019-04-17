@@ -4,9 +4,9 @@ from sklearn.metrics import roc_auc_score
 
 import numpy as np
 
-from src.models.base_model import BaseModel
-from src.data_generator import DataGenerator
-from src.utils import utils
+from models.base_model import BaseModel
+from data_generator import DataGenerator
+from utils import utils
 
 
 def evaluate(base_model: BaseModel, model, x_test: List[str], y_test: List[str]) -> None:

@@ -11,10 +11,10 @@ from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
 
 from matplotlib import pyplot as plt
 
-from src.data_generator import DataGenerator
-from src.utils import utils
-from src.utils.learning_rate_tracker import LearningRateTracker
-from src.utils.roc_auc_callback import ROCAUCCallback
+from data_generator import DataGenerator
+from utils import utils
+from utils.learning_rate_tracker import LearningRateTracker
+from utils.roc_auc_callback import ROCAUCCallback
 
 
 class BaseModel(ABC):

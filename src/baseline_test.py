@@ -3,8 +3,8 @@ import argparse
 import numpy as np
 from keras.utils import multi_gpu_model
 
-from src.models.sample_cnn_3_9 import SampleCNN39
-import src.evaluator as evaluator
+from models.sample_cnn_3_9 import SampleCNN39
+import evaluator as evaluator
 
 batch_size = 25
 

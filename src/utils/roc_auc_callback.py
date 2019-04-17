@@ -1,8 +1,8 @@
 from keras.callbacks import Callback
 import numpy as np
 
-from src.utils import utils
-import src.evaluator as evaluator
+from utils import utils
+import evaluator as evaluator
 
 
 class ROCAUCCallback(Callback):

@@ -1,6 +1,6 @@
 import numpy as np
-import src.sqllite_repository as sql
-import src.utils.msd_tags as msd
+import sqllite_repository as sql
+import utils.msd_tags as msd
 
 
 def convert_tags_to_npy(ids, npy_path):
