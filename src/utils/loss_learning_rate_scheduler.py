@@ -3,7 +3,6 @@ from __future__ import print_function
 
 import keras
 from keras import backend as K
-import numpy as np
 
 
 class LossLearningRateScheduler(keras.callbacks.History):

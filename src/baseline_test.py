@@ -3,8 +3,8 @@ import argparse
 import numpy as np
 from keras.utils import multi_gpu_model
 
-from models.sample_cnn_3_9 import SampleCNN39
-from evaluator import Evaluator
+from src.models.sample_cnn_3_9 import SampleCNN39
+import src.evaluator as evaluator
 
 batch_size = 25
 
@@ -22,8 +22,6 @@ y_test = np.load(base_path + "y_test_pub.npy")
 
 base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
                          weight_name='../results/best_weights_%s_%s.hdf5', args=args)
-
-evaluator = Evaluator(batch_size=batch_size)
 
 model = multi_gpu_model(base_model.model, gpus=2)
 

@@ -1,16 +1,5 @@
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.models import model_from_json
-from keras.utils import multi_gpu_model
 import numpy as np
-import os
-import models.samplecnn_test as samplecnn
-from sklearn.metrics import multilabel_confusion_matrix
 import itertools
-
-import matplotlib
-matplotlib.use("TkAgg")
-from matplotlib import pyplot as plt
 
 def predict(model):
     x_test = [song.rstrip() for song in open("../data/mtat/test_path.txt")]
@@ -31,6 +20,7 @@ def predict(model):
 
     return x_pred
 
+"""
 def plot_confusion_matrix(predictions, truths, target_names, title='Confusion matrix', cmap=None, normalize=True):
     cm = multilabel_confusion_matrix(truths, predictions)
     print(cm)
@@ -74,3 +64,4 @@ predictions = (predictions > 0.5).astype(int)
 truths = np.load("../data/mtat/y_test_pub.npy").astype(int)
 labels = [label.rstrip() for label in open("../data/mtat/tags.txt")]
 plot_confusion_matrix(predictions, truths, labels)
+"""

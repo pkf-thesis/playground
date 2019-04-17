@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
-from models.base_model import BaseModel
-import utils.gtzan_genres as gtzan
+from src.models.base_model import BaseModel
+import src.utils.gtzan_genres as gtzan
 
 import numpy as np
 import librosa

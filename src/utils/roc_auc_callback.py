@@ -42,7 +42,7 @@ class ROCAUCCallback(Callback):
 
         auc = evaluator.mean_roc_auc(x_pred, self.y_val)
 
-        print('\rroc-auc_val: %s' % (str(np.mean(auc))), end=100 * ' ' + '\n')
+        print('\r roc-auc_val: %s' % (str(np.mean(auc))), end=100 * ' ' + '\n')
         return
 
     def on_batch_begin(self, batch, logs={}):
