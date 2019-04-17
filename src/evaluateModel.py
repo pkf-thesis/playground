@@ -19,7 +19,7 @@ def mean_roc_auc(predictions, truths):
     return np.mean(auc)
 
 
-_predictions = np.load("prediction.npy")
+_predictions = np.load("../results/predictions_mtat_8e-05.npy")
 _truths = np.load("../data/mtat/y_test_pub.npy").astype(int)
 auc_score = mean_roc_auc(_predictions, _truths)
 print(auc_score)
