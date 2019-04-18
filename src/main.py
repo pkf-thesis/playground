@@ -33,49 +33,48 @@ if __name__ == '__main__':
                                 weight_name='../results/best_weights_%s_%s.hdf5', args=args)
     else:
         base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
-                                 weight_name='../results/best_weights_%s_%s.hdf5', args=args)
+                                 weight_name='../results/best_weights_%s_%s_adam.hdf5', args=args)
 
     start = time.time()
-    output.write("Start Training %s - %s \n" % (base_model.model_name, start))
-    print('Train first learning rate')
+    output.write("Start Training %s with Adam optimizer - %s \n" % (base_model.model_name, start))
     lr = learning_rates[0]
-    model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+    model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=1000, lr=lr)
 
     print("Testing")
     x_pred = evaluator.predict(base_model, model, x_test, lr)
 
     'Save predictions'
-    np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
+    np.save("../results/predictions_%s_%s_%s_adam.npy" % (base_model.model_name, args.d, lr), x_pred)
 
     test_result = evaluator.mean_roc_auc(x_pred, y_test)
     print("Mean ROC-AUC: %s" % test_result)
     output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 
-    'For each learning rate'
-    for lr_index in range(1, len(learning_rates)):
-        lr = learning_rates[lr_index]
-        if args.local:
-            base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
-                                    weight_name='../results/best_weights_%s_%s.hdf5', args=args)
-        else:
-            base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
-                                     weight_name='../results/best_weights_%s_%s.hdf5', args=args)
-
-        print('Train %s' % lr)
-        model = base_model.retrain(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr,
-                                   lr_prev=learning_rates[lr_index-1])
-
-        print("Testing")
-        x_pred = evaluator.predict(base_model, model, x_test, lr)
-
-        'Save predictions'
-        np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
-
-        test_result = evaluator.mean_roc_auc(x_pred, y_test)
-        print("Mean ROC-AUC: %s" % test_result)
-        output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+    # 'For each learning rate'
+    # for lr_index in range(1, len(learning_rates)):
+    #     lr = learning_rates[lr_index]
+    #     if args.local:
+    #         base_model = Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
+    #                                 weight_name='../results/best_weights_%s_%s.hdf5', args=args)
+    #     else:
+    #         base_model = SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
+    #                                  weight_name='../results/best_weights_%s_%s.hdf5', args=args)
+    #
+    #     print('Train %s' % lr)
+    #     model = base_model.retrain(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr,
+    #                                lr_prev=learning_rates[lr_index-1])
+    #
+    #     print("Testing")
+    #     x_pred = evaluator.predict(base_model, model, x_test, lr)
+    #
+    #     'Save predictions'
+    #     np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
+    #
+    #     test_result = evaluator.mean_roc_auc(x_pred, y_test)
+    #     print("Mean ROC-AUC: %s" % test_result)
+    #     output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
 
     end = time.time()
-    output.write("End Training %s - %s" % (base_model.model_name, end))
+    output.write("End Training %s - %s \n" % (base_model.model_name, end))
 
     output.close()
