@@ -11,7 +11,7 @@ import evaluator as evaluator
 from utils.utils import get_data
 
 batch_size = 25
-learning_rates = [0.01, 0.002, 0.0004, 0.00008, 0.000016]
+learning_rates = [0.0001, 0.002, 0.0004, 0.00008, 0.000016]
 
 
 if __name__ == '__main__':

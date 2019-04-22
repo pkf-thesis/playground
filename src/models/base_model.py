@@ -80,7 +80,7 @@ class BaseModel(ABC):
 
         train_model.compile(
             loss=keras.losses.binary_crossentropy,
-            optimizer=keras.optimizers.Adam(),
+            optimizer=keras.optimizers.Adam(lr=lr),
             metrics=['accuracy'])
 
         train_gen = utils.train_generator(train_x, train_y, self.batch_size, 25, self.dimension[0], self.n_labels,
