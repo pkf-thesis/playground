@@ -19,8 +19,7 @@ def build_basic():
                       weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
 def build_sample_39():
-    return SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size,
-                        weight_name='../results/best_weights_%s_%s.hdf5', args=args)
+    return SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -37,5 +36,5 @@ if __name__ == '__main__':
     else:
         build_model = build_sample_39
 
-    exp.run_experiment(build_model, args)
-    #exp.run_cross_experiment(build_model, args)
+    #exp.run_experiment(build_model, args)
+    exp.run_cross_experiment(build_model, args)

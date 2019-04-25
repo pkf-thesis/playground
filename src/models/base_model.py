@@ -19,7 +19,7 @@ from utils.roc_auc_callback import ROCAUCCallback
 
 class BaseModel(ABC):
 
-    def __init__(self, song_length: int, dim, n_channels: int, batch_size: int, weight_name, args):
+    def __init__(self, song_length: int, dim, n_channels: int, batch_size: int, args):
         self.path = "../sdb/data/%s/%s.npz"
 
         self.song_length = song_length
@@ -28,7 +28,6 @@ class BaseModel(ABC):
         self.input_shape = np.empty((*self.dimension, self.n_channels)).shape
         self.n_labels = 10 if args.d == 'gtzan' else 50
         self.batch_size = batch_size
-        self.weight_name = weight_name
 
         self.model = self.build_model()
         self.model.summary()
@@ -60,8 +59,7 @@ class BaseModel(ABC):
     def build_model(self):
         raise NotImplementedError
 
-    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr):
-
+    def train(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, weight_name):
         # Save model
         json_name = 'model_architecture_%s_%s_%s.6f.json' % (self.model_name, self.dataset, lr)
         if os.path.isfile(json_name) != 1:
@@ -89,7 +87,7 @@ class BaseModel(ABC):
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
-        check_pointer = ModelCheckpoint(self.weight_name % (self.model_name, lr), monitor='val_loss', verbose=0,
+        check_pointer = ModelCheckpoint(weight_name % (self.model_name, lr), monitor='val_loss', verbose=0,
                                         save_best_only=True, mode='auto', save_weights_only=True)
         self.callbacks.append(check_pointer)
         self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))
@@ -109,7 +107,7 @@ class BaseModel(ABC):
 
         return train_model
 
-    def retrain(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, lr_prev):
+    def retrain(self, train_x, train_y, valid_x, valid_y, epoch_size, lr, lr_prev, weight_name):
 
         train_model = self.model
         if self.gpu:
@@ -121,7 +119,7 @@ class BaseModel(ABC):
                 pass
 
         # load weights model
-        train_model.load_weights(self.weight_name % (self.model_name, lr_prev))
+        train_model.load_weights(weight_name % (self.model_name, lr_prev))
 
         train_model.compile(
             loss=keras.losses.binary_crossentropy,
@@ -134,7 +132,7 @@ class BaseModel(ABC):
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
-        check_pointer = ModelCheckpoint(self.weight_name % (self.model_name, lr), monitor='val_loss', verbose=0,
+        check_pointer = ModelCheckpoint(weight_name % (self.model_name, lr), monitor='val_loss', verbose=0,
                                         save_best_only=True, mode='auto', save_weights_only=True)
         self.callbacks.append(check_pointer)
         self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))

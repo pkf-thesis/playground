@@ -20,7 +20,8 @@ def run_experiment(build_model, args):
     output.write("Start Training %s - %s \n" % (base_model.model_name, start))
     print('Train first learning rate')
     lr = learning_rates[0]
-    model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+    weight_name = '../results/best_weights_%s_%s.hdf5' % (base_model.model_name, lr)
+    model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, weight_name=weight_name)
 
     print("Testing")
     x_pred = evaluator.predict(base_model, model, x_test, lr)
@@ -36,11 +37,12 @@ def run_experiment(build_model, args):
     for lr_index in range(1, len(learning_rates)):
         lr = learning_rates[lr_index]
 
-        base_model = build_model
+        base_model = build_model()
 
         print('Train %s' % lr)
+        weight_name = '../results/best_weights_%s_%s.hdf5' % (base_model.model_name, lr)
         model = base_model.retrain(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr,
-                                   lr_prev=learning_rates[lr_index - 1])
+                                   lr_prev=learning_rates[lr_index - 1], weight_name=weight_name)
 
         print("Testing")
         x_pred = evaluator.predict(base_model, model, x_test, lr)
@@ -80,7 +82,7 @@ def run_cross_experiment(build_model, args):
             for idx in valid_idx:
                 x_valid.append(train_ids[idx])
 
-        output = open("../results/cross/results.txt", "w")
+        output = open("../results/cross/results.txt", "a")
 
         'First learning rate'
         base_model = build_model()
@@ -89,7 +91,8 @@ def run_cross_experiment(build_model, args):
         output.write("Start Training %s - %s \n" % (base_model.model_name, start))
         print('Train first learning rate')
         lr = learning_rates[0]
-        model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr)
+        weight_name = '../results/cross/%s_best_weights_%s_%s.hdf5' % (i, base_model.model_name, lr)
+        model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, weight_name=weight_name)
 
         print("Testing")
         x_pred = evaluator.predict(base_model, model, x_test, lr)
@@ -108,8 +111,9 @@ def run_cross_experiment(build_model, args):
             base_model = build_model()
 
             print('Train %s' % lr)
+            weight_name = '../results/cross/%s_best_weights_%s_%s.hdf5' % (i, base_model.model_name, lr)
             model = base_model.retrain(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr,
-                                       lr_prev=learning_rates[lr_index - 1])
+                                       lr_prev=learning_rates[lr_index - 1], weight_name=weight_name)
 
             print("Testing")
             x_pred = evaluator.predict(base_model, model, x_test, lr)
