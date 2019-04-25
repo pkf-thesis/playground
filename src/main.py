@@ -14,12 +14,15 @@ import experiments as exp
 
 batch_size = 25
 
+
 def build_basic():
     return Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
                       weight_name='../results/best_weights_%s_%s.hdf5', args=args)
 
+
 def build_sample_39():
     return SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

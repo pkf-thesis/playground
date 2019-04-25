@@ -87,7 +87,7 @@ class BaseModel(ABC):
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
-        check_pointer = ModelCheckpoint(weight_name % (self.model_name, lr), monitor='val_loss', verbose=0,
+        check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0,
                                         save_best_only=True, mode='auto', save_weights_only=True)
         self.callbacks.append(check_pointer)
         self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))
@@ -119,7 +119,9 @@ class BaseModel(ABC):
                 pass
 
         # load weights model
-        train_model.load_weights(weight_name % (self.model_name, lr_prev))
+        splitted_weight_name= weight_name.split("_")[-1]
+        splitted_weight_name[-1] = str(lr_prev)
+        train_model.load_weights("".join(splitted_weight_name))
 
         train_model.compile(
             loss=keras.losses.binary_crossentropy,
@@ -132,7 +134,7 @@ class BaseModel(ABC):
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
                                 dim=self.dimension, n_classes=self.n_labels)
 
-        check_pointer = ModelCheckpoint(weight_name % (self.model_name, lr), monitor='val_loss', verbose=0,
+        check_pointer = ModelCheckpoint(weight_name, monitor='val_loss', verbose=0,
                                         save_best_only=True, mode='auto', save_weights_only=True)
         self.callbacks.append(check_pointer)
         self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))
