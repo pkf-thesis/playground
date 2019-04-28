@@ -17,10 +17,7 @@ def evaluate(base_model, model, x_test: List[str], y_test: List[str]) -> None:
     print("val_loss = {:.3f} and val_acc = {:.3f}".format(score[0], score[1]))
 
 
-def predict(base_model, model, x_test: List[str], lr):
-    """Load best weights"""
-    if lr is not None:
-        model.load_weights(base_model.weight_name % (base_model.model_name, lr))
+def predict(base_model, model, x_test: List[str]):
 
     sample_length = base_model.dimension[0]
     num_segments = utils.calculate_num_segments(sample_length)

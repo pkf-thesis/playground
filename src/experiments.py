@@ -24,7 +24,8 @@ def run_experiment(build_model, args):
     model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, weight_name=weight_name)
 
     print("Testing")
-    x_pred = evaluator.predict(base_model, model, x_test, lr)
+    model.load_weights(weight_name)
+    x_pred = evaluator.predict(base_model, model, x_test)
 
     'Save predictions'
     np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
@@ -45,7 +46,8 @@ def run_experiment(build_model, args):
                                    lr_prev=learning_rates[lr_index - 1], weight_name=weight_name)
 
         print("Testing")
-        x_pred = evaluator.predict(base_model, model, x_test, lr)
+        model.load_weights(weight_name)
+        x_pred = evaluator.predict(base_model, model, x_test)
 
         'Save predictions'
         np.save("../results/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
@@ -88,14 +90,15 @@ def run_cross_experiment(build_model, args):
         base_model = build_model()
 
         start = time.time()
-        output.write("Start Training %s - %s \n" % (base_model.model_name, start))
+        output.write("Start Cross %s Training %s - %s \n" % (i, base_model.model_name, start))
         print('Train first learning rate')
         lr = learning_rates[0]
         weight_name = '../results/cross/%s_best_weights_%s_%s.hdf5' % (i, base_model.model_name, lr)
         model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, weight_name=weight_name)
 
         print("Testing")
-        x_pred = evaluator.predict(base_model, model, x_test, lr)
+        model.load_weights(weight_name)
+        x_pred = evaluator.predict(base_model, model, x_test)
 
         'Save predictions'
         np.save("../results/cross/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
@@ -116,7 +119,8 @@ def run_cross_experiment(build_model, args):
                                        lr_prev=learning_rates[lr_index - 1], weight_name=weight_name)
 
             print("Testing")
-            x_pred = evaluator.predict(base_model, model, x_test, lr)
+            model.load_weights(weight_name)
+            x_pred = evaluator.predict(base_model, model, x_test)
 
             'Save predictions'
             np.save("../results/cross/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
