@@ -37,6 +37,25 @@ def predict(base_model, model, x_test: List[str]):
     return x_pred
 
 
+def confusion_matrix(predictions, truths):
+    n_labels = len(truths[0])
+    n_predictions = len(predictions)
+    cm = np.zeros((n_labels, n_labels))
+    for index in range(n_predictions):
+        prediction = predictions[index]
+        truth = truths[index]
+        truthIndexes = np.nonzero(truth)
+        cm_temp = cm = np.zeros((n_labels, n_labels))
+        for labelIndex in range(n_labels):
+            label_prediction = prediction[labelIndex]
+            truth_weight = 1/len(truthIndexes)
+            for truthIndex in truthIndexes:
+                cm_temp[labelIndex, truthIndex] = truth_weight * label_prediction
+        cm = np.add(cm_temp, cm)
+    return cm
+
+
+
 # Example
 # predictions   = array([[0.54, 0.98, 0.43], [0.32, 0.18, 0.78], [0.78, 0.76, 0.86]])
 # truths        = array([[1, 1, 0], [0, 0, 1], [1, 1, 0]])
