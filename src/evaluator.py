@@ -36,7 +36,7 @@ def predict(base_model, model, x_test: List[str]):
 
     return x_pred
 
-
+#TODO: normalization
 def confusion_matrix(predictions, truths):
     n_labels = len(truths[0])
     n_predictions = len(predictions)
