@@ -44,13 +44,14 @@ def confusion_matrix(predictions, truths):
     for index in range(n_predictions):
         prediction = predictions[index]
         truth = truths[index]
-        truthIndexes = np.nonzero(truth)
-        cm_temp = cm = np.zeros((n_labels, n_labels))
-        for labelIndex in range(n_labels):
-            label_prediction = prediction[labelIndex]
-            truth_weight = 1/len(truthIndexes)
-            for truthIndex in truthIndexes:
-                cm_temp[labelIndex, truthIndex] = truth_weight * label_prediction
+        norm_prediction = prediction / sum(prediction)
+        truth_indexes = np.nonzero(truth)
+        cm_temp = np.zeros((n_labels, n_labels))
+        for label_index in range(n_labels):
+            label_prediction = norm_prediction[label_index]
+            truth_weight = 1/len(truth_indexes)
+            for truthIndex in truth_indexes:
+                cm_temp[label_index, truthIndex] = truth_weight * label_prediction
         cm = np.add(cm_temp, cm)
     return cm
 
@@ -66,10 +67,10 @@ def mean_roc_auc(predictions, truths):
     auc = np.zeros(n_labels)
     label_truths = np.zeros((n_labels, num_predictions))
     label_predictions = np.zeros((n_labels, num_predictions))
-    for labelIndex in range(n_labels):
+    for label_index in range(n_labels):
         for index in range(num_predictions):
-            label_predictions[labelIndex, index] = predictions[index, labelIndex]
-            label_truths[labelIndex, index] = truths[index, labelIndex]
+            label_predictions[label_index, index] = predictions[index, label_index]
+            label_truths[label_index, index] = truths[index, label_index]
     for i in range(n_labels):
         truths = label_truths[i]
         predictions = label_predictions[i]
