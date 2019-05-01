@@ -45,17 +45,12 @@ def confusion_matrix(predictions, truths):
         prediction = predictions[index]
         truth = truths[index]
         norm_prediction = prediction / sum(prediction)
-        truth_indexes = np.nonzero(truth)
-        cm_temp = np.zeros((n_labels, n_labels))
-        for label_index in range(n_labels):
-            label_prediction = norm_prediction[label_index]
-            truth_weight = 1/len(truth_indexes)
-            for truthIndex in truth_indexes:
-                cm_temp[label_index, truthIndex] = truth_weight * label_prediction
+        norm_truth = truth / sum(truth)
+        pred_matrix = np.repeat(norm_prediction.reshape((-1, 1)), n_labels, axis=1)
+        truth_matrix = np.repeat(np.array([norm_truth]), n_labels, axis=0)
+        cm_temp = pred_matrix * truth_matrix
         cm = np.add(cm_temp, cm)
     return cm
-
-
 
 # Example
 # predictions   = array([[0.54, 0.98, 0.43], [0.32, 0.18, 0.78], [0.78, 0.76, 0.86]])
