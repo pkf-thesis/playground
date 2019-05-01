@@ -119,9 +119,9 @@ class BaseModel(ABC):
                 pass
 
         # load weights model
-        splitted_weight_name= weight_name.split("_")[-1]
+        splitted_weight_name = weight_name.split("_")
         splitted_weight_name[-1] = str(lr_prev)
-        train_model.load_weights("".join(splitted_weight_name))
+        train_model.load_weights("_".join(splitted_weight_name))
 
         train_model.compile(
             loss=keras.losses.binary_crossentropy,
