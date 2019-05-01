@@ -50,6 +50,7 @@ def confusion_matrix(predictions, truths):
         truth_matrix = np.repeat(np.array([norm_truth]), n_labels, axis=0)
         cm_temp = pred_matrix * truth_matrix
         cm = np.add(cm_temp, cm)
+        norm_cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     return cm
 
 # Example
