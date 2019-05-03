@@ -67,11 +67,11 @@ class SampleCNNDeepResNet(BaseModel):
         shortcut = input
         # 1 X 1 conv if shape is different. Else identity.
         if stride > 1 or not equal_channels:
-            shortcut = Conv1D(filters=residual_shape[channel],
+            shortcut = Convolution1D(residual_shape[channel],
                             kernel_size=1,
                             strides=stride,
-                            padding="valid",
-                            kernel_initializer="he_normal",
+                            border_mode="valid",
+                            init="he_normal",
                             kernel_regularizer=l2(0.0001))(input)
 
         return add([shortcut, residual])
@@ -86,7 +86,6 @@ class SampleCNNDeepResNet(BaseModel):
             activ = Activation(activ)(bn)
             inputLayer = activ
         return self._shortcut(input, inputLayer)
-
 
     def build_model(self):
         activ = 'relu'
