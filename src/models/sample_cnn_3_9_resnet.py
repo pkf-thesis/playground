@@ -95,7 +95,7 @@ class SampleCNN39ResNet(BaseModel):
         activ = 'relu'
         init = 'he_uniform'
 
-        pool_input = Input(shape=(self.input_dim, 1))
+        pool_input = Input(shape=(self.input_shape))
 
         conv0 = Convolution1D(128, 3, subsample_length=3, border_mode='valid', init=init, name="conv0")(pool_input)
         bn0 = BatchNormalization(name="bn0")(conv0)

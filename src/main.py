@@ -38,10 +38,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     build_model = None
-    if args.local:
+    if args.local == 'True':
         build_model = build_basic
     else:
-        build_model = build_sample_deep_resnet
+        build_model = build_sample_deep_resnet()
 
     if args.cross:
         exp.run_cross_experiment(build_model, args)

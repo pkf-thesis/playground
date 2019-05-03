@@ -67,64 +67,64 @@ class SampleCNNDeepResNet(BaseModel):
         shortcut = input
         # 1 X 1 conv if shape is different. Else identity.
         if stride > 1 or not equal_channels:
-            shortcut = Convolution1D(residual_shape[channel],
+            shortcut = Conv1D(residual_shape[channel],
                             kernel_size=1,
                             strides=stride,
-                            border_mode="valid",
-                            init="he_normal",
+                            padding="valid",
+                            kernel_initializer="he_normal",
                             kernel_regularizer=l2(0.0001))(input)
 
         return add([shortcut, residual])
 
-    def generateStackedConvolutions(self, input, filters):
-        activ = 'relu'
+    def generate_stacked_convolutions(self, input_layer, filters):
+        activation = 'relu'
         init = 'he_uniform'
-        inputLayer = input
+        output_layer = input_layer
         for i in range(3):
-            conv = Convolution1D(filters, 3, border_mode='same', init=init)(inputLayer)
+            conv = Conv1D(filters, 3, padding='same', kernel_initializer=init)(input_layer)
             bn = BatchNormalization()(conv)
-            activ = Activation(activ)(bn)
-            inputLayer = activ
-        return self._shortcut(input, inputLayer)
+            activ = Activation(activation)(bn)
+            output_layer = activ
+        return self._shortcut(input_layer, output_layer)
 
     def build_model(self):
         activ = 'relu'
         init = 'he_uniform'
 
-        pool_input = Input(shape=(self.input_dim, 1))
+        pool_input = Input(shape=self.input_shape)
 
-        conv0 = Convolution1D(128, 3, subsample_length=3, border_mode='valid', init=init, name="conv0")(pool_input)
+        conv0 = Conv1D(128, 3, strides=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
         bn0 = BatchNormalization(name="bn0")(conv0)
         activ0 = Activation(activ, name="activ0")(bn0)
 
-        deep1 = self.generateStackedConvolutions(activ0, 128)
-        MP1 = MaxPooling1D(pool_length=3)(deep1)
+        deep1 = self.generate_stacked_convolutions(activ0, 128)
+        MP1 = MaxPooling1D(pool_size=3)(deep1)
 
-        deep2 = self.generateStackedConvolutions(MP1, 128)
-        MP2 = MaxPooling1D(pool_length=3)(deep2)
+        deep2 = self.generate_stacked_convolutions(MP1, 128)
+        MP2 = MaxPooling1D(pool_size=3)(deep2)
 
-        deep3 = self.generateStackedConvolutions(MP2, 256)
-        MP3 = MaxPooling1D(pool_length=3)(deep3)
+        deep3 = self.generate_stacked_convolutions(MP2, 256)
+        MP3 = MaxPooling1D(pool_size=3)(deep3)
 
-        deep4 = self.generateStackedConvolutions(MP3, 256)
-        MP4 = MaxPooling1D(pool_length=3)(deep4)
+        deep4 = self.generate_stacked_convolutions(MP3, 256)
+        MP4 = MaxPooling1D(pool_size=3)(deep4)
 
-        deep5 = self.generateStackedConvolutions(MP4, 256)
-        MP5 = MaxPooling1D(pool_length=3)(deep5)
+        deep5 = self.generate_stacked_convolutions(MP4, 256)
+        MP5 = MaxPooling1D(pool_size=3)(deep5)
 
-        deep6 = self.generateStackedConvolutions(MP5, 256)
-        MP6 = MaxPooling1D(pool_length=3)(deep6)
+        deep6 = self.generate_stacked_convolutions(MP5, 256)
+        MP6 = MaxPooling1D(pool_size=3)(deep6)
 
-        deep7 = self.generateStackedConvolutions(MP6, 256)
-        MP7 = MaxPooling1D(pool_length=3)(deep7)
+        deep7 = self.generate_stacked_convolutions(MP6, 256)
+        MP7 = MaxPooling1D(pool_size=3)(deep7)
 
-        deep8 = self.generateStackedConvolutions(MP7, 256)
-        MP8 = MaxPooling1D(pool_length=3)(deep8)
+        deep8 = self.generate_stacked_convolutions(MP7, 256)
+        MP8 = MaxPooling1D(pool_size=3)(deep8)
 
-        deep9 = self.generateStackedConvolutions(MP8, 512)
-        MP9 = MaxPooling1D(pool_length=3)(deep9)
+        deep9 = self.generate_stacked_convolutions(MP8, 512)
+        MP9 = MaxPooling1D(pool_size=3)(deep9)
 
-        deep10 = self.generateStackedConvolutions(MP9, 512)
+        deep10 = self.generate_stacked_convolutions(MP9, 512)
         dropout1 = Dropout(0.5)(deep10)
 
         Flattened = Flatten()(dropout1)
