@@ -68,11 +68,11 @@ class SampleCNNDeepResNet(BaseModel):
         # 1 X 1 conv if shape is different. Else identity.
         if stride > 1 or not equal_channels:
             shortcut = Conv1D(residual_shape[channel],
-                            kernel_size=1,
-                            strides=stride,
-                            padding="valid",
-                            kernel_initializer="he_normal",
-                            kernel_regularizer=l2(0.0001))(input)
+                              kernel_size=1,
+                              strides=stride,
+                              padding="valid",
+                              kernel_initializer="he_normal",
+                              kernel_regularizer=l2(0.0001))(input)
 
         return add([shortcut, residual])
 
@@ -81,7 +81,7 @@ class SampleCNNDeepResNet(BaseModel):
         init = 'he_uniform'
         output_layer = input_layer
         for i in range(3):
-            conv = Conv1D(filters, 3, padding='same', kernel_initializer=init)(input_layer)
+            conv = Conv1D(filters, 3, padding='same', kernel_initializer=init)(output_layer)
             bn = BatchNormalization()(conv)
             activ = Activation(activation)(bn)
             output_layer = activ
