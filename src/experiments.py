@@ -91,7 +91,8 @@ def run_cross_experiment(build_model, args):
 
         start = time.time()
         output.write("Start Cross %s Training %s - %s \n" % (i, base_model.model_name, start))
-        print('Train first learning rate')
+
+        print('Train first learning rate for cross validation')
         lr = learning_rates[0]
         weight_name = '../results/cross/%s_best_weights_%s_%s.hdf5' % (i, base_model.model_name, lr)
         model = base_model.train(x_train, y_train, x_valid, y_valid, epoch_size=100, lr=lr, weight_name=weight_name)

@@ -16,12 +16,15 @@ batch_size = 25
 
 
 def build_basic():
-    return Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size,
-                      weight_name='../results/best_weights_%s_%s.hdf5', args=args)
+    return Basic2DCNN(song_length=640512, dim=(128, 126), n_channels=1, batch_size=batch_size, args=args)
 
 
 def build_sample_39():
     return SampleCNN39(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
+
+
+def build_sample_deep_resnet():
+    return SampleCNNDeepResNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
 
 
 if __name__ == '__main__':
@@ -30,6 +33,7 @@ if __name__ == '__main__':
     parser.add_argument("-logging", help="Logs to csv file")
     parser.add_argument("-gpu", type=list, help="Run on gpu's, and which")
     parser.add_argument("-local", help="Whether to run local or on server")
+    parser.add_argument("-cross", help="Whether to run cross experiments or not")
 
     args = parser.parse_args()
 
@@ -37,7 +41,10 @@ if __name__ == '__main__':
     if args.local:
         build_model = build_basic
     else:
-        build_model = build_sample_39
+        build_model = build_sample_deep_resnet
 
-    #exp.run_experiment(build_model, args)
-    exp.run_cross_experiment(build_model, args)
+    if args.cross:
+        exp.run_cross_experiment(build_model, args)
+    else:
+        exp.run_experiment(build_model, args)
+
