@@ -25,7 +25,7 @@ class SampleCNNDeepResNet(BaseModel):
     input_dim = 3 * 3 ** 9
     overlap = 0
 
-    def transform_data(self, ids_temp: List[str], labels_temp, batch_size: int) -> Tuple[np.array, np.array]:
+    def transform_data(self, ids_temp, labels_temp, batch_size: int):
         num_segments = calculate_num_segments(self.input_dim)
         new_batch_size = batch_size * num_segments
 
@@ -49,7 +49,7 @@ class SampleCNNDeepResNet(BaseModel):
 
             for sub_song in sub_signals:
                 sub_song = sub_song.reshape((-1, 1))
-                x[count, ] = sub_song
+                x[count,] = sub_song
                 y[count] = labels_temp[i]
 
                 count += 1
