@@ -26,7 +26,7 @@ class SampleCNNDeepResNet(BaseModel):
     overlap = 0
 
     def transform_data(self, ids_temp: List[str], labels_temp, batch_size: int) -> Tuple[np.array, np.array]:
-        num_segments = calculate_num_segments(self.song_length, self.input_dim)
+        num_segments = calculate_num_segments(self.input_dim)
         new_batch_size = batch_size * num_segments
 
         # Initialization
