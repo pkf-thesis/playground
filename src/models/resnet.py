@@ -61,7 +61,7 @@ class ResNet(BaseModel):
         step = 1
         input_shape = K.int_shape(input)
         residual_shape = K.int_shape(residual)
-        stride = int(round(input_shape[step] / residual_shape[step]))
+        stride = int(round(input_shape[step] / residual_shape[step], 0))
         equal_channels = input_shape[channel] == residual_shape[channel]
 
         shortcut = input
