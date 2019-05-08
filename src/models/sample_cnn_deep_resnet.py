@@ -143,7 +143,7 @@ class SampleCNNDeepResNet(BaseModel):
         chunk = self.input_dim
 
         # Split song and create sub samples
-        splitted_song = [song[i*chunk: i*chunk+chunk] for i in range(0, num_segments)]
+        splitted_song = [song[i * chunk: i * chunk + chunk] for i in range(0, num_segments)]
         for sub_song in splitted_song:
             if len(sub_song) == chunk:
                 temp_song.append(sub_song)

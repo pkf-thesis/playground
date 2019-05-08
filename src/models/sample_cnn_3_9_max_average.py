@@ -4,8 +4,7 @@ from keras import Input, Model
 
 from models.base_model import BaseModel
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Convolution1D
+from keras.layers import Dense, Activation, Convolution1D, AveragePooling1D
 from keras.layers import Conv1D
 from keras.layers import MaxPooling1D
 from keras.layers import Dropout
@@ -13,13 +12,10 @@ from keras.layers import Flatten
 from keras.layers import BatchNormalization
 from keras.layers import concatenate
 
-from keras.layers.merge import add
-from keras import backend as K
-
 from utils.utils import calculate_num_segments
 
 
-class SampleCNN39MaxAverage(BaseModel):
+class SampleCNNMaxAverage(BaseModel):
 
     model_name = "SampleCNN_3_9_max_average"
 
@@ -84,62 +80,59 @@ class SampleCNN39MaxAverage(BaseModel):
 
         pool_input = Input(shape=(self.input_dim, 1))
 
-        conv0 = Convolution1D(128, 3, subsample_length=3, border_mode='valid', init=init, name="conv0")(pool_input)
+        conv0 = Conv1D(128, kernel_size=3, strides=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
         bn0 = BatchNormalization(name="bn0")(conv0)
         activ0 = Activation(activ, name="activ0")(bn0)
 
-        conv1 = Convolution1D(128, 3, border_mode='same', init=init, name="conv1")(activ0)
+        conv1 = Conv1D(128, 3, padding='same', kernel_initializer=init, name="conv1")(activ0)
         bn1 = BatchNormalization()(conv1)
         activ1 = Activation(activ)(bn1)
         MP1 = MaxPooling1D(pool_length=3)(activ1)
 
-        conv2 = Convolution1D(128, 3, border_mode='same', init=init)(MP1)
+        conv2 = Conv1D(128, 3, padding='same', kernel_initializer=init)(MP1)
         bn2 = BatchNormalization()(conv2)
         activ2 = Activation(activ)(bn2)
         MP2 = MaxPooling1D(pool_length=3)(activ2)
 
-        conv3 = Convolution1D(256, 3, border_mode='same', init=init)(MP2)
+        conv3 = Conv1D(256, 3, padding='same', kernel_initializer=init)(MP2)
         bn3 = BatchNormalization()(conv3)
         activ3 = Activation(activ)(bn3)
         MP3 = MaxPooling1D(pool_length=3)(activ3)
 
-        conv4 = Convolution1D(256, 3, border_mode='same', init=init)(MP3)
+        conv4 = Conv1D(256, 3, padding='same', kernel_initializer=init)(MP3)
         bn4 = BatchNormalization()(conv4)
         activ4 = Activation(activ)(bn4)
         MP4 = MaxPooling1D(pool_length=3)(activ4)
 
-        conv5 = Convolution1D(256, 3, border_mode='same', init=init)(MP4)
+        conv5 = Conv1D(256, 3, padding='same', kernel_initializer=init)(MP4)
         bn5 = BatchNormalization()(conv5)
         activ5 = Activation(activ)(bn5)
         MP5 = MaxPooling1D(pool_length=3)(activ5)
 
-        conv6 = Convolution1D(256, 3, border_mode='same', init=init)(MP5)
+        conv6 = Conv1D(256, 3, padding='same', kernel_initializer=init)(MP5)
         bn6 = BatchNormalization()(conv6)
         activ6 = Activation(activ)(bn6)
         MP6 = MaxPooling1D(pool_length=3)(activ6)
 
-        conv7 = Convolution1D(256, 3, border_mode='same', init=init)(MP6)
+        conv7 = Conv1D(256, 3, padding='same', kernel_initializer=init)(MP6)
         bn7 = BatchNormalization()(conv7)
         activ7 = Activation(activ)(bn7)
         MP7 = MaxPooling1D(pool_length=3)(activ7)
 
-        conv8 = Convolution1D(256, 3, border_mode='same', init=init)(MP7)
+        conv8 = Conv1D(256, 3, padding='same', kernel_initializer=init)(MP7)
         bn8 = BatchNormalization()(conv8)
         activ8 = Activation(activ)(bn8)
         MP8 = MaxPooling1D(pool_length=3)(activ8)
 
-        conv9 = Convolution1D(512, 3, border_mode='same', init=init)(MP8)
+        conv9 = Conv1D(512, 3, padding='same', kernel_initializer=init)(MP8)
         bn9 = BatchNormalization()(conv9)
         activ9 = Activation(activ)(bn9)
-        MP9 = MaxPooling1D(pool_length=3)(activ9)
+        max_average = self.max_average_pooling(activ9)
 
-        conv10 = Convolution1D(512, 1, border_mode='same', init=init)(MP9)
+        conv10 = Conv1D(512, 1, padding='same', kernel_initializer=init)(max_average)
         bn10 = BatchNormalization()(conv10)
         activ10 = Activation(activ)(bn10)
-
-        max_average = self.max_average_pooling(activ10)
-
-        dropout1 = Dropout(0.5)(max_average)
+        dropout1 = Dropout(0.5)(activ10)
 
         Flattened = Flatten()(dropout1)
 

@@ -1,5 +1,5 @@
 import numpy as np
-from iterstrat.ml_stratifiers import MultilabelStratifiedKFold, MultilabelStratifiedShuffleSplit
+from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
 import time
 
 import evaluator as evaluator
@@ -32,7 +32,7 @@ def run_experiment(build_model, args):
 
     test_result = evaluator.mean_roc_auc(x_pred, y_test)
     print("Mean ROC-AUC: %s" % test_result)
-    output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+    output.write("%s -  Mean ROC-AUC: %s, %s \n" % (lr, test_result, time.time()))
 
     'For each learning rate'
     for lr_index in range(1, len(learning_rates)):
@@ -54,7 +54,7 @@ def run_experiment(build_model, args):
 
         test_result = evaluator.mean_roc_auc(x_pred, y_test)
         print("Mean ROC-AUC: %s" % test_result)
-        output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+        output.write("%s -  Mean ROC-AUC: %s, %s \n" % (lr, test_result, time.time()))
 
     end = time.time()
     output.write("End Training %s - %s" % (base_model.model_name, end))
@@ -106,7 +106,7 @@ def run_cross_experiment(build_model, args):
 
         test_result = evaluator.mean_roc_auc(x_pred, y_test)
         print("Mean ROC-AUC: %s" % test_result)
-        output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+        output.write("%s -  Mean ROC-AUC: %s, %s \n" % (lr, test_result, time.time()))
 
         'For each learning rate'
         for lr_index in range(1, len(learning_rates)):
@@ -128,7 +128,7 @@ def run_cross_experiment(build_model, args):
 
             test_result = evaluator.mean_roc_auc(x_pred, y_test)
             print("Mean ROC-AUC: %s" % test_result)
-            output.write("%lr -  Mean ROC-AUC: %s \n" % (lr, test_result))
+            output.write("%s -  Mean ROC-AUC: %s, %s \n" % (lr, test_result, time.time()))
 
         end = time.time()
         output.write("End Training %s - %s" % (base_model.model_name, end))
