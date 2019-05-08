@@ -87,44 +87,44 @@ class ResNet(BaseModel):
         activ0 = Activation(activ, name="activ0")(bn0)
 
         # First
-        conv1 = Conv1D(128, 3, strides=3, padding='valid', kernel_initializer=init)(activ0)
+        conv1 = Conv1D(128, 3, strides=3, padding='valid', kernel_initializer=init, name="conv1")(activ0)
         bn1 = BatchNormalization(name="bn1")(conv1)
         activ1 = Activation(activ, name="activ1")(bn1)
 
-        conv2 = Conv1D(128, 3, strides=3, padding='valid', kernel_initializer=init)(activ1)
+        conv2 = Conv1D(128, 3, strides=3, padding='valid', kernel_initializer=init, name="conv2")(activ1)
         bn2 = BatchNormalization(name="bn2")(conv2)
         activ2 = Activation(activ, name="activ2")(bn2)
 
         res1 = self._shortcut(activ0, activ2)
 
         # Second
-        conv3 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(res1)
+        conv3 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init, name="conv3")(res1)
         bn3 = BatchNormalization(name="bn3")(conv3)
         activ3 = Activation(activ, name="activ3")(bn3)
 
-        conv4 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(activ3)
+        conv4 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init, name="conv4")(activ3)
         bn4 = BatchNormalization(name="bn4")(conv4)
         activ4 = Activation(activ, name="activ4")(bn4)
 
         res2 = self._shortcut(res1, activ4)
 
         # Third
-        conv5 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(res2)
+        conv5 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init, name="conv5")(res2)
         bn5 = BatchNormalization(name="bn5")(conv5)
         activ5 = Activation(activ, name="activ5")(bn5)
 
-        conv6 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(activ5)
+        conv6 = Conv1D(256, 3, strides=3, padding='valid', kernel_initializer=init, name="conv6")(activ5)
         bn6 = BatchNormalization(name="bn6")(conv6)
         activ6 = Activation(activ, name="activ6")(bn6)
 
         res3 = self._shortcut(res2, activ6)
 
         # Fourth
-        conv7 = Conv1D(512, 3, strides=3, padding='valid', kernel_initializer=init)(activ6)
+        conv7 = Conv1D(512, 3, strides=3, padding='valid', kernel_initializer=init, name="conv7")(res3)
         bn7 = BatchNormalization(name="bn7")(conv7)
         activ7 = Activation(activ, name="activ7")(bn7)
 
-        conv8 = Conv1D(512, 3, strides=3, padding='valid', kernel_initializer=init)(activ7)
+        conv8 = Conv1D(512, 3, strides=3, padding='valid', kernel_initializer=init, name="conv8")(activ7)
         bn8 = BatchNormalization(name="bn8")(conv8)
         activ8 = Activation(activ, name="activ8")(bn8)
 
