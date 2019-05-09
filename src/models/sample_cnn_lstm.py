@@ -5,22 +5,19 @@ from keras import Input, Model
 from models.base_model import BaseModel
 
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Convolution1D
+from keras.layers import Dense, Activation, Convolution1D, LSTM
 from keras.layers import Conv1D
 from keras.layers import MaxPooling1D
 from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.layers import BatchNormalization
 
-from keras.layers.merge import add
-from keras import backend as K
-
 from utils.utils import calculate_num_segments
 
 
-class SampleCNN39(BaseModel):
+class SampleCNNLSTM(BaseModel):
 
-    model_name = "SampleCNN_3_9"
+    model_name = "SampleCNN_LSTM"
 
     input_dim = 3 * 3 ** 9
     overlap = 0
@@ -129,8 +126,12 @@ class SampleCNN39(BaseModel):
         model.add(BatchNormalization())
         model.add(Dropout(0.5))
 
+        model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
+
         #Twelveth layer
-        model.add(Flatten())
+        # model.add(Flatten())
+
+
         model.add(Dense(self.n_labels, activation='sigmoid'))
 
         return model
