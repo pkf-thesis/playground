@@ -80,7 +80,7 @@ class SampleCNNDeepResNet(BaseModel):
         activation = 'relu'
         init = 'he_uniform'
         output_layer = input_layer
-        for i in range(3):
+        for i in range(2):
             conv = Conv1D(filters, 3, padding='same', kernel_initializer=init)(output_layer)
             bn = BatchNormalization()(conv)
             activ = Activation(activation)(bn)
