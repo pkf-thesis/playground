@@ -14,6 +14,10 @@ from keras.layers import concatenate
 
 from utils.utils import calculate_num_segments
 
+from utils.mixed_pooling import mixed_pooling
+
+from utils.MixedMaxAvgPooling1D import MixedMaxAvgPooling1D
+
 
 class MaxAverageNet(BaseModel):
 
@@ -77,6 +81,7 @@ class MaxAverageNet(BaseModel):
     def build_model(self):
         activ = 'relu'
         init = 'he_uniform'
+        alpha = -1
 
         pool_input = Input(shape=(self.input_dim, 1))
 
@@ -87,61 +92,56 @@ class MaxAverageNet(BaseModel):
         conv1 = Conv1D(128, 3, padding='same', kernel_initializer=init, name="conv1")(activ0)
         bn1 = BatchNormalization()(conv1)
         activ1 = Activation(activ)(bn1)
-        max_average1 = self.max_average_pooling(activ1)
+        alpha, max_average1 = MixedMaxAvgPooling1D(alpha=-1)(activ1)
 
         conv2 = Conv1D(128, 3, padding='same', kernel_initializer=init)(max_average1)
         bn2 = BatchNormalization()(conv2)
         activ2 = Activation(activ)(bn2)
-        max_average2 = self.max_average_pooling(activ2)
+        _, max_average2 = mixed_pooling(activ2, -1, size=3)
 
         conv3 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average2)
         bn3 = BatchNormalization()(conv3)
         activ3 = Activation(activ)(bn3)
-        max_average3 = self.max_average_pooling(activ3)
+        _, max_average3 = mixed_pooling(activ3, -1, size=3)
 
         conv4 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average3)
         bn4 = BatchNormalization()(conv4)
         activ4 = Activation(activ)(bn4)
-        max_average4 = self.max_average_pooling(activ4)
+        _, max_average4 = mixed_pooling(activ4, -1, size=3)
 
         conv5 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average4)
         bn5 = BatchNormalization()(conv5)
         activ5 = Activation(activ)(bn5)
-        max_average5 = self.max_average_pooling(activ5)
+        _, max_average5 = mixed_pooling(activ5, -1, size=3)
 
         conv6 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average5)
         bn6 = BatchNormalization()(conv6)
         activ6 = Activation(activ)(bn6)
-        max_average6 = self.max_average_pooling(activ6)
+        _, max_average6 = mixed_pooling(activ6, -1, size=3)
 
         conv7 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average6)
         bn7 = BatchNormalization()(conv7)
         activ7 = Activation(activ)(bn7)
-        max_average7 = self.max_average_pooling(activ7)
+        _, max_average7 = mixed_pooling(activ7, -1, size=3)
 
-        conv8 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average7)
+        conv8 = Conv1D(512, 3, padding='same', kernel_initializer=init)(max_average7)
         bn8 = BatchNormalization()(conv8)
         activ8 = Activation(activ)(bn8)
-        max_average8 = self.max_average_pooling(activ8)
+        _, max_average8 = mixed_pooling(activ8, -1, size=3)
 
         conv9 = Conv1D(512, 3, padding='same', kernel_initializer=init)(max_average8)
         bn9 = BatchNormalization()(conv9)
         activ9 = Activation(activ)(bn9)
-        max_average9 = self.max_average_pooling(activ9)
+        _, max_average9 = mixed_pooling(activ9, -1, size=3)
 
-        conv10 = Conv1D(512, 3, padding='same', kernel_initializer=init)(max_average9)
+        conv10 = Conv1D(512, 1, padding='same', kernel_initializer=init)(max_average9)
         bn10 = BatchNormalization()(conv10)
         activ10 = Activation(activ)(bn10)
-        max_average10 = self.max_average_pooling(activ10)
-
-        conv11 = Conv1D(512, 1, padding='same', kernel_initializer=init)(max_average10)
-        bn11 = BatchNormalization()(conv11)
-        activ11 = Activation(activ)(bn11)
-        dropout1 = Dropout(0.5)(activ11)
+        dropout1 = Dropout(0.5)(activ10)
 
         Flattened = Flatten()(dropout1)
 
         output = Dense(self.n_labels, activation='sigmoid')(Flattened)
-        model = Model(input=pool_input, output=output)
+        model = Model(inputs=pool_input, outputs=output)
 
         return model

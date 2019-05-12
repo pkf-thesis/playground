@@ -9,6 +9,7 @@ from models.sample_cnn_3_9_max_average import SampleCNNMaxAverage
 from models.sample_cnn_avg import SampleCNNAvg
 from models.resnet import ResNet
 from models.sample_cnn_lstm import SampleCNNLSTM
+from models.max_average_net import MaxAverageNet
 
 import experiments as exp
 
@@ -43,6 +44,10 @@ def build_sample_lstm():
     return SampleCNNLSTM(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
 
 
+def build_max_average_net():
+    return MaxAverageNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "-data", help="gtzan, mtat or msd")
@@ -57,7 +62,7 @@ if __name__ == '__main__':
     if args.local == 'True':
         build_model = build_basic
     else:
-        build_model = build_sample_lstm
+        build_model = build_max_average_net()
 
     if args.cross:
         exp.run_cross_experiment(build_model, args)

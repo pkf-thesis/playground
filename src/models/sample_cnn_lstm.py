@@ -128,10 +128,6 @@ class SampleCNNLSTM(BaseModel):
 
         model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
 
-        #Twelveth layer
-        # model.add(Flatten())
-
-
         model.add(Dense(self.n_labels, activation='sigmoid'))
 
         return model

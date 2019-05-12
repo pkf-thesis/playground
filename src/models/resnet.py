@@ -82,7 +82,7 @@ class ResNet(BaseModel):
 
         pool_input = Input(shape=self.input_shape)
 
-        conv0 = Conv1D(128, 9, strides=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
+        conv0 = Conv1D(128, 9, strides=9, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
         bn0 = BatchNormalization(name="bn0")(conv0)
         activ0 = Activation(activ, name="activ0")(bn0)
 
