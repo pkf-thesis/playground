@@ -91,7 +91,6 @@ class BaseModel(ABC):
                                         save_best_only=True, mode='auto', save_weights_only=True)
         self.callbacks.append(check_pointer)
         self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))
-        self.callbacks.append(LambdaCallback(on_epoch_end=lambda batch, logs: print(train_model.layers[0].get_weights())))
 
         history = train_model.fit_generator(
             train_gen,
