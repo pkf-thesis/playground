@@ -119,14 +119,7 @@ class SampleCNNLSTM(BaseModel):
         #Tenth layer
         model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
         model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Eleventh layer
-        model.add(Conv1D(512, 1, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.5))
-
-        model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
+        model.add(LSTM(512, dropout=0.2, recurrent_dropout=0.2))
 
         model.add(Dense(self.n_labels, activation='sigmoid'))
 

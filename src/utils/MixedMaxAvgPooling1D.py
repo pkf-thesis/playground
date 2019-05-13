@@ -2,7 +2,7 @@ import tensorflow as tf
 from keras import backend as K
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
-from keras.initializers import RandomNormal
+from keras.initializers import RandomNormal, Zeros, RandomUniform
 from keras.layers import MaxPooling1D, AveragePooling1D, multiply, add, conv_utils
 
 
@@ -23,7 +23,7 @@ class MixedMaxAvgPooling1D(Layer):
 
     def build(self, input_shape):
         if self.alpha == -1:
-            self.alpha = self.add_weight(name=self.name, shape=(1,), initializer='zeros')
+            self.alpha = self.add_weight(name=self.name, shape=(1,), initializer=RandomUniform(minval=0.0, maxval=1.0))
         super(MixedMaxAvgPooling1D, self).build(input_shape)  # Be sure to call this at the end
 
     def call(self, inputs):

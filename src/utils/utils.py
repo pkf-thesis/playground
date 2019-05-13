@@ -159,7 +159,8 @@ def load_multigpu_checkpoint_weights(model, h5py_file):
 
     print("Setting weights...")
     with h5py.File(h5py_file, "r") as file:
-
+        for key in file.keys():
+            print(key)
         # Get model subset in file - other layers are empty
         weight_file = file["model_1"]
 
@@ -185,3 +186,18 @@ def load_multigpu_checkpoint_weights(model, h5py_file):
 
             except Exception as e:
                 print("Error: Could not load weights for layer:", layer.name, file=stderr)
+
+
+def check_weights(build_model, file):
+    load_multigpu_checkpoint_weights(build_model, file)
+    weights = build_model.layers[7].get_weights()
+    weights2 = build_model.layers[11].get_weights()
+    weights3 = build_model.layers[15].get_weights()
+    weights4 = build_model.layers[19].get_weights()
+    weights5 = build_model.layers[23].get_weights()
+    weights6 = build_model.layers[27].get_weights()
+    weights7 = build_model.layers[31].get_weights()
+    weights8 = build_model.layers[35].get_weights()
+    weights9 = build_model.layers[39].get_weights()
+
+    print("%s, %s, %s, %s, %s, %s, %s, %s, %s" % (weights, weights2, weights3, weights4, weights5, weights6, weights7, weights8, weights9))
