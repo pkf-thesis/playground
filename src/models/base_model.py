@@ -7,7 +7,7 @@ import numpy as np
 
 import keras
 from keras.utils import multi_gpu_model
-from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
+from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping, LambdaCallback
 
 from matplotlib import pyplot as plt
 
@@ -91,13 +91,16 @@ class BaseModel(ABC):
                                         save_best_only=True, mode='auto', save_weights_only=True)
         self.callbacks.append(check_pointer)
         self.callbacks.append(ROCAUCCallback(valid_x, valid_y, self.dimension[0], self.n_labels, self.dataset, self.path))
+        self.callbacks.append(LambdaCallback(on_epoch_end=lambda batch, logs: print(train_model.layers[0].get_weights())))
 
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
             steps_per_epoch=len(train_x) // self.batch_size * utils.calculate_num_segments(self.dimension[0]),
+            # steps_per_epoch=10, # Used for testing
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
+            # validation_steps=10, # Used for testing
             epochs=epoch_size,
             workers=self.workers,
             use_multiprocessing=False,

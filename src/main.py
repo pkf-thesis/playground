@@ -1,6 +1,10 @@
-import argparse
+from sys import stderr
 
-import music_to_npy_convertor, train_test_divider as train_test_divider
+import argparse
+import h5py
+import numpy as np
+from keras.utils import multi_gpu_model
+
 from models.basic_2d_cnn import Basic2DCNN
 from models.sample_cnn_3_9 import SampleCNN39
 from models.sample_cnn_3_9_resnet import SampleCNN39ResNet
@@ -12,6 +16,8 @@ from models.sample_cnn_lstm import SampleCNNLSTM
 from models.max_average_net import MaxAverageNet
 
 import experiments as exp
+
+import tensorflow as tf
 
 batch_size = 25
 
@@ -47,7 +53,6 @@ def build_sample_lstm():
 def build_max_average_net():
     return MaxAverageNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "-data", help="gtzan, mtat or msd")
@@ -62,10 +67,9 @@ if __name__ == '__main__':
     if args.local == 'True':
         build_model = build_basic
     else:
-        build_model = build_max_average_net()
+        build_model = build_max_average_net
 
     if args.cross:
         exp.run_cross_experiment(build_model, args)
     else:
         exp.run_experiment(build_model, args)
-

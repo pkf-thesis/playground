@@ -65,3 +65,6 @@ truths = np.load("../data/mtat/y_test_pub.npy").astype(int)
 labels = [label.rstrip() for label in open("../data/mtat/tags.txt")]
 plot_confusion_matrix(predictions, truths, labels)
 """
+
+# load_multigpu_checkpoint_weights(build_model, "C:\\Users\\kkr\\Desktop\\Thesis\\playground\\best_weights_max_average_net_0.01.hdf5")
+# weights = build_model.layers[8].get_weights()
