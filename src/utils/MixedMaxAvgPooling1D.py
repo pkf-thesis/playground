@@ -8,7 +8,7 @@ from keras.layers import MaxPooling1D, AveragePooling1D, multiply, add, conv_uti
 
 class MixedMaxAvgPooling1D(Layer):
 
-    def __init__(self, name, alpha, pool_size=2, strides=None,
+    def __init__(self, name, alpha, method, pool_size=2, strides=None,
                  padding='valid', data_format='channels_last', **kwargs):
         if strides is None:
             strides = pool_size
@@ -18,12 +18,14 @@ class MixedMaxAvgPooling1D(Layer):
         self.data_format = data_format
         self.input_spec = InputSpec(ndim=3)
         self.alpha = alpha
+        self.method = method
         self.name = name
         super(MixedMaxAvgPooling1D, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        if self.alpha == -1:
-            self.alpha = self.add_weight(name=self.name, shape=(1,), initializer=RandomUniform(minval=0.0, maxval=1.0))
+        if self.alpha is None:
+            if 'region' not in self.method:
+                self.alpha = self.add_weight(name=self.name, shape=(1,), initializer=RandomUniform(minval=0.0, maxval=1.0))
         super(MixedMaxAvgPooling1D, self).build(input_shape)  # Be sure to call this at the end
 
     def call(self, inputs):

@@ -1,4 +1,5 @@
 import os
+from queue import Queue
 from sys import stderr
 
 import h5py
@@ -159,10 +160,13 @@ def load_multigpu_checkpoint_weights(model, h5py_file):
 
     print("Setting weights...")
     with h5py.File(h5py_file, "r") as file:
+        model_name = None
         for key in file.keys():
-            print(key)
+            if 'model' in key:
+                model_name = key
+
         # Get model subset in file - other layers are empty
-        weight_file = file["model_1"]
+        weight_file = file[model_name]
 
         for layer in model.layers:
 
@@ -200,4 +204,25 @@ def check_weights(build_model, file):
     weights8 = build_model.layers[35].get_weights()
     weights9 = build_model.layers[39].get_weights()
 
-    print("%s, %s, %s, %s, %s, %s, %s, %s, %s" % (weights, weights2, weights3, weights4, weights5, weights6, weights7, weights8, weights9))
+    print("%s, %s, %s, %s, %s, %s, %s, %s, %s" % (weights, weights2, weights3, weights4, weights5,
+                                                  weights6, weights7, weights8, weights9))
+
+def find_index(vector, x):
+    for i in vector:
+        if i[i] == x:
+            return i
+    return -1
+
+def compare_degree(i, j):
+    return i - j
+
+def degree_generator():
+    x = None
+
+
+def reverse_cm_hill(matrix):
+    queue = Queue()
+    R = None
+    not_visited = {}
+
+

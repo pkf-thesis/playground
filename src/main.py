@@ -9,12 +9,13 @@ from models.sample_cnn_avg import SampleCNNAvg
 from models.resnet import ResNet
 from models.sample_cnn_lstm import SampleCNNLSTM
 from models.max_average_net import MaxAverageNet
+from models.mixed_net import MixedNet
 
 import experiments as exp
 
 from utils.utils import load_multigpu_checkpoint_weights
 
-from src.utils.utils import check_weights
+from utils.utils import check_weights
 
 batch_size = 25
 
@@ -51,6 +52,10 @@ def build_max_average_net():
     return MaxAverageNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
 
 
+def build_mixed_net():
+    return MixedNet(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "-data", help="gtzan, mtat or msd")
@@ -65,8 +70,8 @@ if __name__ == '__main__':
     if args.local == 'True':
         build_model = build_basic
     else:
-        build_model = build_sample_lstm
-        #check_weights(build_model.build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_max_average_net_2_0.01.hdf5")
+        build_model = build_mixed_net
+        #check_weights(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_max_average_net_2_8e-05.hdf5")
 
     if args.cross:
         exp.run_cross_experiment(build_model, args)
