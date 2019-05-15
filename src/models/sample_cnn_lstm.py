@@ -17,7 +17,7 @@ from utils.utils import calculate_num_segments
 
 class SampleCNNLSTM(BaseModel):
 
-    model_name = "SampleCNN_LSTM"
+    model_name = "SampleCNN_LSTM_2"
 
     input_dim = 3 * 3 ** 9
     overlap = 0
@@ -111,12 +111,6 @@ class SampleCNNLSTM(BaseModel):
         model.add(BatchNormalization())
         model.add(MaxPooling1D(pool_size=3, strides=3))
 
-        #Ninth layer
-        model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling1D(pool_size=3, strides=3))
-
-        #Tenth layer
         model.add(Conv1D(512, 3, strides=1, padding='same', activation='relu'))
         model.add(BatchNormalization())
         model.add(LSTM(512, dropout=0.2, recurrent_dropout=0.2))

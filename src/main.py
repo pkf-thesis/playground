@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if args.local == 'True':
         build_model = build_basic
     else:
-        build_model = build_mixed_net
+        build_model = build_sample_lstm
         #check_weights(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_max_average_net_2_8e-05.hdf5")
 
     if args.cross:
