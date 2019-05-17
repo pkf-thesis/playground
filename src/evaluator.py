@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
-from scipy import sparse
+from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import reverse_cuthill_mckee
 
 from utils import utils
@@ -42,8 +42,7 @@ def predict(base_model, model, x_test: List[str]):
     return x_pred
 
 
-# TODO: normalization
-def make_confusion_matrix(predictions, truths, cuthill=True):
+def make_confusion_matrix(predictions, truths):
     n_labels = len(truths[0])
     n_predictions = len(predictions)
     cm = np.zeros((n_labels, n_labels))
@@ -57,10 +56,6 @@ def make_confusion_matrix(predictions, truths, cuthill=True):
         cm_temp = pred_matrix * truth_matrix
         cm = np.add(cm_temp, cm)
     norm_cm = cm/cm.sum(axis=0,keepdims=1)
-    if cuthill:
-        csr_cm = sparse.csr_matrix(norm_cm)
-        perm = reverse_cuthill_mckee(csr_cm)
-        norm_cm = norm_cm[perm, perm]
     return norm_cm
 
 # Example
@@ -114,14 +109,36 @@ def plot_confusion_matrix(predictions, truths, target_names, title='Confusion ma
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.savefig("confusion_matrix.png", bbox_inches="tight")
 
+# Group: 0 = all, 1 = genre, 2 = instrumental, 3 = mood, 4 = gender, 5 = other
+def plot_confusion_matrix2(predictions, truths, labels, group=0):
+    genre_ids = [1,3,6,7,11,16,17,29,34,37,38,46,48]
+    instrumental_ids = [0,4,5,9,12,14,22,25,31,42,43]
+    mood_ids = [2,8,10,23,24,30,45]
+    gender_ids = [15,18,26,27,33,39,40,47]
+    other_ids = [13,19,20,21,28,32,35,36,41,44,49]
 
-def plot_confusion_matrix2(predictions, truths, labels):
     cm = make_confusion_matrix(truths, predictions)
-    print(cm)
+
+    if group == 1:
+        labels = np.take(labels, genre_ids)
+        cm = np.take(cm[genre_ids],genre_ids,1)
+    if group == 2:
+        labels = np.take(labels, instrumental_ids)
+        cm = np.take(cm[instrumental_ids],instrumental_ids,1)
+    if group == 3:
+        labels = np.take(labels, mood_ids)
+        cm = np.take(cm[mood_ids],mood_ids,1)
+    if group == 4:
+        labels = np.take(labels, gender_ids)
+        cm = np.take(cm[gender_ids],gender_ids,1)
+    if group == 5:
+        labels = np.take(labels, other_ids)
+        cm = np.take(cm[other_ids],other_ids,1)
+
     df_cm = pd.DataFrame(cm, index=[i for i in labels],
                          columns=[i for i in labels])
     # plt.figure(figsize=(10, 7))
     sn.set(font_scale=0.4)
     #sn.palplot(sn.color_palette("Blues"))
-    sn.heatmap(df_cm, cmap="Blues")
+    sn.heatmap(df_cm)
     plt.show()
