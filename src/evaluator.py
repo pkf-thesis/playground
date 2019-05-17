@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
+from scipy import sparse
+from scipy.sparse.csgraph import reverse_cuthill_mckee
 
 from utils import utils
 
@@ -41,7 +43,7 @@ def predict(base_model, model, x_test: List[str]):
 
 
 # TODO: normalization
-def make_confusion_matrix(predictions, truths):
+def make_confusion_matrix(predictions, truths, cuthill=True):
     n_labels = len(truths[0])
     n_predictions = len(predictions)
     cm = np.zeros((n_labels, n_labels))
@@ -54,8 +56,11 @@ def make_confusion_matrix(predictions, truths):
         truth_matrix = np.repeat(np.array([norm_truth]), n_labels, axis=0)
         cm_temp = pred_matrix * truth_matrix
         cm = np.add(cm_temp, cm)
-        #norm_cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     norm_cm = cm/cm.sum(axis=0,keepdims=1)
+    if cuthill:
+        csr_cm = sparse.csr_matrix(norm_cm)
+        perm = reverse_cuthill_mckee(csr_cm)
+        norm_cm = norm_cm[perm, perm]
     return norm_cm
 
 # Example
