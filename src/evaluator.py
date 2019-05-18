@@ -111,34 +111,38 @@ def plot_confusion_matrix(predictions, truths, target_names, title='Confusion ma
 
 # Group: 0 = all, 1 = genre, 2 = instrumental, 3 = mood, 4 = gender, 5 = other
 def plot_confusion_matrix2(predictions, truths, labels, group=0):
-    genre_ids = [1,3,6,7,11,16,17,29,34,37,38,46,48]
-    instrumental_ids = [0,4,5,9,12,14,22,25,31,42,43]
-    mood_ids = [2,8,10,23,24,30,45]
-    gender_ids = [15,18,26,27,33,39,40,47]
-    other_ids = [13,19,20,21,28,32,35,36,41,44,49]
+    genre_ids = [6, 11, 1, 3, 48, 7, 38, 16, 17, 29, 34, 37, 46]
+    instrumental_ids = [0, 9, 22, 4, 5, 12, 14, 25, 42, 31, 43]
+    mood_ids = [2, 10, 24, 30, 8, 23, 45]
+    gender_ids = [18, 27, 33, 39, 15, 26, 40, 47]
+    other_ids = [35, 49, 13, 19, 20, 36, 32, 41, 21, 28, 44]
 
     cm = make_confusion_matrix(truths, predictions)
 
     if group == 1:
         labels = np.take(labels, genre_ids)
-        cm = np.take(cm[genre_ids],genre_ids,1)
+        cm = np.take(cm[genre_ids], genre_ids, 1)
     if group == 2:
         labels = np.take(labels, instrumental_ids)
-        cm = np.take(cm[instrumental_ids],instrumental_ids,1)
+        cm = np.take(cm[instrumental_ids], instrumental_ids, 1)
     if group == 3:
         labels = np.take(labels, mood_ids)
-        cm = np.take(cm[mood_ids],mood_ids,1)
+        cm = np.take(cm[mood_ids], mood_ids, 1)
     if group == 4:
         labels = np.take(labels, gender_ids)
-        cm = np.take(cm[gender_ids],gender_ids,1)
+        cm = np.take(cm[gender_ids], gender_ids, 1)
     if group == 5:
         labels = np.take(labels, other_ids)
-        cm = np.take(cm[other_ids],other_ids,1)
+        cm = np.take(cm[other_ids], other_ids, 1)
+    if group == 6:
+        all_ids = genre_ids + instrumental_ids + mood_ids + gender_ids + other_ids
+        labels = np.take(labels, all_ids)
+        cm = np.take(cm[all_ids], all_ids, 1)
 
     df_cm = pd.DataFrame(cm, index=[i for i in labels],
                          columns=[i for i in labels])
     # plt.figure(figsize=(10, 7))
-    sn.set(font_scale=0.4)
+    sn.set(font_scale=1)
     #sn.palplot(sn.color_palette("Blues"))
     sn.heatmap(df_cm)
     plt.show()

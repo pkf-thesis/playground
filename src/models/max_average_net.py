@@ -81,7 +81,6 @@ class MaxAverageNet(BaseModel):
     def build_model(self):
         activ = 'relu'
         init = 'he_uniform'
-        alpha = -1
 
         pool_input = Input(shape=(self.input_dim, 1))
 
@@ -92,47 +91,56 @@ class MaxAverageNet(BaseModel):
         conv1 = Conv1D(128, 3, padding='same', kernel_initializer=init, name="conv1")(activ0)
         bn1 = BatchNormalization()(conv1)
         activ1 = Activation(activ)(bn1)
-        max_average1 = MixedMaxAvgPooling1D(name='mixmaxavg1', alpha=-1, pool_size=3)(activ1)
+        input_dim1 = self.input_dim / 3
+        max_average1 = MixedMaxAvgPooling1D(name='mixmaxavg1', alpha=None, method='layer', input_dim=input_dim1, pool_size=3)(activ1)
 
         conv2 = Conv1D(128, 3, padding='same', kernel_initializer=init)(max_average1)
         bn2 = BatchNormalization()(conv2)
         activ2 = Activation(activ)(bn2)
-        max_average2 = MixedMaxAvgPooling1D(name='mixmaxavg2', alpha=-1, pool_size=3)(activ2)
+        input_dim2 = input_dim1 / 3
+        max_average2 = MixedMaxAvgPooling1D(name='mixmaxavg2', alpha=None, method='layer', input_dim=input_dim2, pool_size=3)(activ2)
 
         conv3 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average2)
         bn3 = BatchNormalization()(conv3)
         activ3 = Activation(activ)(bn3)
-        max_average3 = MixedMaxAvgPooling1D(name='mixmaxavg3', alpha=-1, pool_size=3)(activ3)
+        input_dim3 = input_dim2 / 3
+        max_average3 = MixedMaxAvgPooling1D(name='mixmaxavg3', alpha=None, method='layer', input_dim=input_dim3, pool_size=3)(activ3)
 
         conv4 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average3)
         bn4 = BatchNormalization()(conv4)
         activ4 = Activation(activ)(bn4)
-        max_average4 = MixedMaxAvgPooling1D(name='mixmaxavg4', alpha=-1, pool_size=3)(activ4)
+        input_dim4 = input_dim3 / 3
+        max_average4 = MixedMaxAvgPooling1D(name='mixmaxavg4', alpha=None, method='layer', input_dim=input_dim4, pool_size=3)(activ4)
 
         conv5 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average4)
         bn5 = BatchNormalization()(conv5)
         activ5 = Activation(activ)(bn5)
-        max_average5 = MixedMaxAvgPooling1D(name='mixmaxavg5', alpha=-1, pool_size=3)(activ5)
+        input_dim5 = input_dim4 / 3
+        max_average5 = MixedMaxAvgPooling1D(name='mixmaxavg5', alpha=None, method='layer', input_dim=input_dim5, pool_size=3)(activ5)
 
         conv6 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average5)
         bn6 = BatchNormalization()(conv6)
         activ6 = Activation(activ)(bn6)
-        max_average6 = MixedMaxAvgPooling1D(name='mixmaxavg6', alpha=-1, pool_size=3)(activ6)
+        input_dim6 = input_dim5 / 3
+        max_average6 = MixedMaxAvgPooling1D(name='mixmaxavg6', alpha=None, method='layer', input_dim=input_dim6, pool_size=3)(activ6)
 
         conv7 = Conv1D(256, 3, padding='same', kernel_initializer=init)(max_average6)
         bn7 = BatchNormalization()(conv7)
         activ7 = Activation(activ)(bn7)
-        max_average7 = MixedMaxAvgPooling1D(name='mixmaxavg7', alpha=-1, pool_size=3)(activ7)
+        input_dim7 = input_dim6 / 3
+        max_average7 = MixedMaxAvgPooling1D(name='mixmaxavg7', alpha=None, method='layer', input_dim=input_dim7, pool_size=3)(activ7)
 
         conv8 = Conv1D(512, 3, padding='same', kernel_initializer=init)(max_average7)
         bn8 = BatchNormalization()(conv8)
         activ8 = Activation(activ)(bn8)
-        max_average8 = MixedMaxAvgPooling1D(name='mixmaxavg8', alpha=-1, pool_size=3)(activ8)
+        input_dim8 = input_dim7 / 3
+        max_average8 = MixedMaxAvgPooling1D(name='mixmaxavg8', alpha=None, method='layer', input_dim=input_dim8, pool_size=3)(activ8)
 
         conv9 = Conv1D(512, 3, padding='same', kernel_initializer=init)(max_average8)
         bn9 = BatchNormalization()(conv9)
         activ9 = Activation(activ)(bn9)
-        max_average9 = MixedMaxAvgPooling1D(name='mixmaxavg9', alpha=-1, pool_size=3)(activ9)
+        input_dim9 = input_dim8 / 3
+        max_average9 = MixedMaxAvgPooling1D(name='mixmaxavg9', alpha=None, method='layer', input_dim=input_dim9, pool_size=3)(activ9)
 
         conv10 = Conv1D(512, 1, padding='same', kernel_initializer=init)(max_average9)
         bn10 = BatchNormalization()(conv10)

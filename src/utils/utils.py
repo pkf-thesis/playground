@@ -143,6 +143,7 @@ def get_data(args):
 
     return x_train, y_train, x_valid, y_valid, x_test, y_test
 
+
 def load_multigpu_checkpoint_weights(model, h5py_file):
     """
     Loads the weights of a weight checkpoint from a multi-gpu
@@ -207,22 +208,12 @@ def check_weights(build_model, file):
     print("%s, %s, %s, %s, %s, %s, %s, %s, %s" % (weights, weights2, weights3, weights4, weights5,
                                                   weights6, weights7, weights8, weights9))
 
-def find_index(vector, x):
-    for i in vector:
-        if i[i] == x:
-            return i
-    return -1
 
-def compare_degree(i, j):
-    return i - j
+def check_weight(build_model, file):
+    load_multigpu_checkpoint_weights(build_model, file)
+    weights = build_model.layers[7].get_weights()
 
-def degree_generator():
-    x = None
+    print("%s" % (weights))
 
-
-def reverse_cm_hill(matrix):
-    queue = Queue()
-    R = None
-    not_visited = {}
 
 

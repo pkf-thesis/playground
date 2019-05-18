@@ -97,51 +97,51 @@ class ResNetConv(BaseModel):
 
         pool_input = Input(shape=(self.input_shape))
 
-        conv0 = Convolution1D(128, 3, subsample_length=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
+        conv0 = Convolution1D(128, 3, strides=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
         bn0 = BatchNormalization(name="bn0")(conv0)
         activ0 = Activation(activ, name="activ0")(bn0)
 
-        conv1 = Convolution1D(128, 3, padding='valid', kernel_initializer=init, name="conv1")(activ0)
+        conv1 = Convolution1D(128, 3, strides=3, padding='valid', kernel_initializer=init, name="conv1")(activ0)
         bn1 = BatchNormalization()(conv1)
         activ1 = Activation(activ)(bn1)
 
-        conv2 = Convolution1D(128, 3, padding='valid', kernel_initializer=init)(activ1)
+        conv2 = Convolution1D(128, 3, strides=3, padding='valid', kernel_initializer=init)(activ1)
         bn2 = BatchNormalization()(conv2)
         activ2 = Activation(activ)(bn2)
 
         residual1 = self._shortcut(activ0, activ2)
 
-        conv3 = Convolution1D(256, 3, padding='valid', kernel_initializer=init)(residual1)
+        conv3 = Convolution1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(residual1)
         bn3 = BatchNormalization()(conv3)
         activ3 = Activation(activ)(bn3)
 
-        conv4 = Convolution1D(256, 3, padding='valid', kernel_initializer=init)(activ3)
+        conv4 = Convolution1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(activ3)
         bn4 = BatchNormalization()(conv4)
         activ4 = Activation(activ)(bn4)
 
         residual2 = self._shortcut(residual1, activ4)
 
-        conv5 = Convolution1D(256, 3, padding='valid', kernel_initializer=init)(residual2)
+        conv5 = Convolution1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(residual2)
         bn5 = BatchNormalization()(conv5)
         activ5 = Activation(activ)(bn5)
 
-        conv6 = Convolution1D(256, 3, padding='valid', kernel_initializer=init)(activ5)
+        conv6 = Convolution1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(activ5)
         bn6 = BatchNormalization()(conv6)
         activ6 = Activation(activ)(bn6)
 
         residual3 = self._shortcut(residual2, activ6)
 
-        conv7 = Convolution1D(256, 3, padding='valid', kernel_initializer=init)(residual3)
+        conv7 = Convolution1D(256, 3, strides=3, padding='valid', kernel_initializer=init)(residual3)
         bn7 = BatchNormalization()(conv7)
         activ7 = Activation(activ)(bn7)
 
-        conv8 = Convolution1D(512, 3, padding='valid', kernel_initializer=init)(activ7)
+        conv8 = Convolution1D(512, 3, strides=3, padding='valid', kernel_initializer=init)(activ7)
         bn8 = BatchNormalization()(conv8)
         activ8 = Activation(activ)(bn8)
 
         residual4 = self._shortcut(residual3, activ8)
 
-        conv9 = Convolution1D(512, 3, padding='valid', kernel_initializer=init)(residual4)
+        conv9 = Convolution1D(512, 3, strides=3, padding='valid', kernel_initializer=init)(residual4)
         bn9 = BatchNormalization()(conv9)
         activ9 = Activation(activ)(bn9)
 
@@ -153,6 +153,6 @@ class ResNetConv(BaseModel):
         Flattened = Flatten()(dropout1)
 
         output = Dense(self.n_labels, activation='sigmoid')(Flattened)
-        model = Model(input=pool_input, output=output)
+        model = Model(inputs=pool_input, outputs=output)
 
         return model
