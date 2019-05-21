@@ -7,7 +7,7 @@ from keras.layers import MaxPooling1D, AveragePooling1D, multiply, add, conv_uti
 
 class MixedMaxAvgPooling1D(Layer):
 
-    def __init__(self, name, alpha, method, input_dim=None, pool_size=2, strides=None,
+    def __init__(self, name, alpha, method='layer', input_dim=None, pool_size=2, strides=None,
                  padding='valid', data_format='channels_last', **kwargs):
         if strides is None:
             strides = pool_size

@@ -102,7 +102,7 @@ def run_cross_experiment(build_model, args):
         x_pred = evaluator.predict(base_model, model, x_test)
 
         'Save predictions'
-        np.save("../results/cross/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
+        np.save("../results/cross/%s_predictions_%s_%s_%s.npy" % (i, base_model.model_name, args.d, lr), x_pred)
 
         test_result = evaluator.mean_roc_auc(x_pred, y_test)
         print("Mean ROC-AUC: %s" % test_result)
@@ -124,7 +124,7 @@ def run_cross_experiment(build_model, args):
             x_pred = evaluator.predict(base_model, model, x_test)
 
             'Save predictions'
-            np.save("../results/cross/predictions_%s_%s_%s.npy" % (base_model.model_name, args.d, lr), x_pred)
+            np.save("../results/cross/%s_predictions_%s_%s_%s.npy" % (i, base_model.model_name, args.d, lr), x_pred)
 
             test_result = evaluator.mean_roc_auc(x_pred, y_test)
             print("Mean ROC-AUC: %s" % test_result)

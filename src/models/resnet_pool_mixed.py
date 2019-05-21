@@ -19,7 +19,6 @@ from utils.MixedMaxAvgPooling1D import MixedMaxAvgPooling1D
 
 
 class ResNetPoolMixed(BaseModel):
-
     model_name = "ResNetPoolMixed"
 
     input_dim = 3 * 3 ** 9
@@ -65,7 +64,7 @@ class ResNetPoolMixed(BaseModel):
         chunk = self.input_dim
 
         # Split song and create sub samples
-        splitted_song = [song[i*chunk: i*chunk+chunk] for i in range(0, num_segments)]
+        splitted_song = [song[i * chunk: i * chunk + chunk] for i in range(0, num_segments)]
         for sub_song in splitted_song:
             if len(sub_song) == chunk:
                 temp_song.append(sub_song)
@@ -84,11 +83,11 @@ class ResNetPoolMixed(BaseModel):
         # 1 X 1 conv if shape is different. Else identity.
         if stride > 1 or not equal_channels:
             shortcut = Conv1D(filters=residual_shape[channel],
-                            kernel_size=1,
-                            strides=stride,
-                            padding="valid",
-                            kernel_initializer="he_normal",
-                            kernel_regularizer=l2(0.0001))(input)
+                              kernel_size=1,
+                              strides=stride,
+                              padding="valid",
+                              kernel_initializer="he_normal",
+                              kernel_regularizer=l2(0.0001))(input)
 
         return add([shortcut, residual])
 
@@ -98,62 +97,62 @@ class ResNetPoolMixed(BaseModel):
 
         pool_input = Input(shape=(self.input_shape))
 
-        conv0 = Convolution1D(128, 3, subsample_length=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
+        conv0 = Convolution1D(128, 3, strides=3, padding='valid', kernel_initializer=init, name="conv0")(pool_input)
         bn0 = BatchNormalization(name="bn0")(conv0)
         activ0 = Activation(activ, name="activ0")(bn0)
 
         conv1 = Convolution1D(128, 3, padding='same', kernel_initializer=init, name="conv1")(activ0)
         bn1 = BatchNormalization()(conv1)
         activ1 = Activation(activ)(bn1)
-        MP1 = MixedMaxAvgPooling1D(name='mixmaxavg1', alpha=-1, pool_size=3)(activ1)
+        MP1 = MixedMaxAvgPooling1D(name='mixmaxavg1', alpha=None, pool_size=3)(activ1)
 
         conv2 = Convolution1D(128, 3, padding='same', kernel_initializer=init)(MP1)
         bn2 = BatchNormalization()(conv2)
         activ2 = Activation(activ)(bn2)
-        MP2 = MixedMaxAvgPooling1D(name='mixmaxavg2', alpha=-1, pool_size=3)(activ2)
+        MP2 = MixedMaxAvgPooling1D(name='mixmaxavg2', alpha=None, pool_size=3)(activ2)
 
         residual1 = self._shortcut(activ0, MP2)
 
         conv3 = Convolution1D(256, 3, padding='same', kernel_initializer=init)(residual1)
         bn3 = BatchNormalization()(conv3)
         activ3 = Activation(activ)(bn3)
-        MP3 = MixedMaxAvgPooling1D(name='mixmaxavg3', alpha=-1, pool_size=3)(activ3)
+        MP3 = MixedMaxAvgPooling1D(name='mixmaxavg3', alpha=None, pool_size=3)(activ3)
 
         conv4 = Convolution1D(256, 3, padding='same', kernel_initializer=init)(MP3)
         bn4 = BatchNormalization()(conv4)
         activ4 = Activation(activ)(bn4)
-        MP4 = MixedMaxAvgPooling1D(name='mixmaxavg4', alpha=-1, pool_size=3)(activ4)
+        MP4 = MixedMaxAvgPooling1D(name='mixmaxavg4', alpha=None, pool_size=3)(activ4)
 
         residual2 = self._shortcut(residual1, MP4)
 
         conv5 = Convolution1D(256, 3, padding='same', kernel_initializer=init)(residual2)
         bn5 = BatchNormalization()(conv5)
         activ5 = Activation(activ)(bn5)
-        MP5 = MixedMaxAvgPooling1D(name='mixmaxavg5', alpha=-1, pool_size=3)(activ5)
+        MP5 = MixedMaxAvgPooling1D(name='mixmaxavg5', alpha=None, pool_size=3)(activ5)
 
         conv6 = Convolution1D(256, 3, padding='same', kernel_initializer=init)(MP5)
         bn6 = BatchNormalization()(conv6)
         activ6 = Activation(activ)(bn6)
-        MP6 = MixedMaxAvgPooling1D(name='mixmaxavg6', alpha=-1, pool_size=3)(activ6)
+        MP6 = MixedMaxAvgPooling1D(name='mixmaxavg6', alpha=None, pool_size=3)(activ6)
 
         residual3 = self._shortcut(residual2, MP6)
 
         conv7 = Convolution1D(256, 3, padding='same', kernel_initializer=init)(residual3)
         bn7 = BatchNormalization()(conv7)
         activ7 = Activation(activ)(bn7)
-        MP7 = MixedMaxAvgPooling1D(name='mixmaxavg7', alpha=-1, pool_size=3)(activ7)
+        MP7 = MixedMaxAvgPooling1D(name='mixmaxavg7', alpha=None, pool_size=3)(activ7)
 
         conv8 = Convolution1D(512, 3, padding='same', kernel_initializer=init)(MP7)
         bn8 = BatchNormalization()(conv8)
         activ8 = Activation(activ)(bn8)
-        MP8 = MixedMaxAvgPooling1D(name='mixmaxavg8', alpha=-1, pool_size=3)(activ8)
+        MP8 = MixedMaxAvgPooling1D(name='mixmaxavg8', alpha=None, pool_size=3)(activ8)
 
         residual4 = self._shortcut(residual3, MP8)
 
         conv9 = Convolution1D(512, 3, padding='same', kernel_initializer=init)(residual4)
         bn9 = BatchNormalization()(conv9)
         activ9 = Activation(activ)(bn9)
-        MP9 = MixedMaxAvgPooling1D(name='mixmaxavg9', alpha=-1, pool_size=3)(activ9)
+        MP9 = MixedMaxAvgPooling1D(name='mixmaxavg9', alpha=None, pool_size=3)(activ9)
 
         conv10 = Convolution1D(512, 1, padding='same', kernel_initializer=init)(MP9)
         bn10 = BatchNormalization()(conv10)

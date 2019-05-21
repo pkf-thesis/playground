@@ -206,7 +206,7 @@ def check_weights(build_model, file):
     weights9 = build_model.layers[39].get_weights()
 
     print("%s, %s, %s, %s, %s, %s, %s, %s, %s" % (weights, weights2, weights3, weights4, weights5,
-                                                  weights6, weights7, weights8, weights9))
+                                                      weights6, weights7, weights8, weights9))
 
 
 def check_weight(build_model, file):

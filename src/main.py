@@ -12,6 +12,7 @@ from models.max_average_net import MaxAverageNet
 from models.mixed_net import MixedNet
 from models.mixed_region import MixedRegion
 from models.resnet_conv import ResNetConv
+from models.resnet_pool_mixed import ResNetPoolMixed
 
 import experiments as exp
 
@@ -67,6 +68,9 @@ def build_mixed_net():
 def build_mixed_region():
     return MixedRegion(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
 
+def build_resnet_mixed_layer():
+    return ResNetPoolMixed(640512, dim=(3 * 3 ** 9,), n_channels=1, batch_size=batch_size, args=args)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -82,7 +86,7 @@ if __name__ == '__main__':
     if args.local == 'True':
         build_model = build_basic
     else:
-        build_model = build_res_net_conv
+        build_model = build_resnet_mixed_layer
         #check_weights(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_max_average_net_1.6e-05.hdf5")
         #check_weight(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_mixed_net_8e-05.hdf5")
 

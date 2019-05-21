@@ -14,14 +14,12 @@ from keras.layers import concatenate
 
 from utils.utils import calculate_num_segments
 
-from utils.mixed_pooling import mixed_pooling
-
 from utils.MixedMaxAvgPooling1D import MixedMaxAvgPooling1D
 
 
 class MaxAverageNet(BaseModel):
 
-    model_name = "max_average_net_2"
+    model_name = "max_average_net_3"
 
     input_dim = 3 * 3 ** 9
     overlap = 0

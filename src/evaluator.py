@@ -55,7 +55,7 @@ def make_confusion_matrix(predictions, truths):
         truth_matrix = np.repeat(np.array([norm_truth]), n_labels, axis=0)
         cm_temp = pred_matrix * truth_matrix
         cm = np.add(cm_temp, cm)
-    norm_cm = cm/cm.sum(axis=0,keepdims=1)
+    norm_cm = cm/cm.sum(axis=0, keepdims=1)
     return norm_cm
 
 # Example
@@ -77,6 +77,23 @@ def mean_roc_auc(predictions, truths):
         predictions = label_predictions[i]
         auc[i] = roc_auc_score(truths, predictions)
     return np.mean(auc)
+
+
+def individual_roc_auc(predictions, truths):
+    num_predictions = len(predictions)
+    n_labels = len(truths[0])
+    auc = np.zeros(n_labels)
+    label_truths = np.zeros((n_labels, num_predictions))
+    label_predictions = np.zeros((n_labels, num_predictions))
+    for label_index in range(n_labels):
+        for index in range(num_predictions):
+            label_predictions[label_index, index] = predictions[index, label_index]
+            label_truths[label_index, index] = truths[index, label_index]
+    for i in range(n_labels):
+        truths = label_truths[i]
+        predictions = label_predictions[i]
+        auc[i] = roc_auc_score(truths, predictions)
+    return auc
 
 
 def plot_confusion_matrix(predictions, truths, target_names, title='Confusion matrix', cmap=None, normalize=True):
