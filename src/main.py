@@ -16,11 +16,9 @@ from models.resnet_pool_mixed import ResNetPoolMixed
 
 import experiments as exp
 
-from utils.utils import load_multigpu_checkpoint_weights
-
 from utils.utils import check_weights, check_weight
 
-batch_size = 25
+batch_size = 50
 
 
 def build_basic():
@@ -87,8 +85,9 @@ if __name__ == '__main__':
         build_model = build_basic
     else:
         build_model = build_resnet_mixed_layer
-        #check_weights(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_max_average_net_1.6e-05.hdf5")
-        #check_weight(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\best_weights_mixed_net_8e-05.hdf5")
+        #check_weights(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\mixed_pooling\\"
+        #                                           "best_weights_ResNetPoolMixed_8e-05.hdf5")
+        #check_weight(build_model().build_model(), "C:\\Users\\kkr\\Desktop\\Thesis\\mixed_pooling\\best_weights_mixed_net_8e-05.hdf5")
 
     if args.cross:
         exp.run_cross_experiment(build_model, args)

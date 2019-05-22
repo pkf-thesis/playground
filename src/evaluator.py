@@ -25,13 +25,14 @@ from utils import utils
 def predict(base_model, model, x_test: List[str]):
 
     sample_length = base_model.dimension[0]
-    num_segments = utils.calculate_num_segments(sample_length)
 
-    x_test_temp = np.zeros((num_segments, sample_length, 1))
     x_pred = np.zeros((len(x_test), base_model.n_labels))
 
     for i, song_id in enumerate(x_test):
         song = np.load(base_model.path % (base_model.dataset, song_id))['arr_0']
+
+        num_segments = utils.calculate_num_segments(len(song), sample_length)
+        x_test_temp = np.zeros((num_segments, sample_length, 1))
 
         for segment in range(0, num_segments):
             x_test_temp[segment] = song[segment * sample_length:

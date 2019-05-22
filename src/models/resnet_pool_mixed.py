@@ -25,14 +25,8 @@ class ResNetPoolMixed(BaseModel):
     overlap = 0
 
     def transform_data(self, ids_temp, labels_temp, batch_size: int):
-        num_segments = calculate_num_segments(self.input_dim)
-        new_batch_size = batch_size * num_segments
-
-        # Initialization
-        x = np.empty((new_batch_size, *self.dimension, self.n_channels), dtype='float32')
-        y = np.empty((new_batch_size, len(labels_temp[0])))
-
         count = 0
+
         # Generate data
         for i, song_id in enumerate(ids_temp):
             song = np.load("../sdb/data/%s/%s.npz" % (self.dataset, song_id))
@@ -42,6 +36,13 @@ class ResNetPoolMixed(BaseModel):
                 song_temp = song['arr_0']
             except:
                 print(song_id)
+
+            num_segments = calculate_num_segments(len(song_temp), self.input_dim)
+            new_batch_size = batch_size * num_segments
+
+            # Initialization
+            x = np.empty((new_batch_size, *self.dimension, self.n_channels), dtype='float32')
+            y = np.empty((new_batch_size, len(labels_temp[0])))
 
             # Convert song to sub songs
             sub_signals = self.split_song(song_temp, num_segments)

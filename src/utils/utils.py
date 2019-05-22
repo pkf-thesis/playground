@@ -7,14 +7,15 @@ import numpy as np
 
 import train_test_divider as train_test_divider
 
+
 def make_path(*paths):
     path = os.path.join(*[str(path) for path in paths])
     path = os.path.realpath(path)
     return path
 
 
-def calculate_num_segments(sample_length):
-    return 640512 // sample_length
+def calculate_num_segments(song_length, sample_length):
+    return song_length // sample_length
 
 
 def train_generator(train_list, y_train_init, batch_size, song_batch, sample_length, num_tags, dataset, path):
@@ -27,12 +28,11 @@ def train_generator(train_list, y_train_init, batch_size, song_batch, sample_len
     # MSD: example, total 201680, song_batch=40, subset_size=5042, batch_size=50
     # MTAT: total 15244, song_batch=37, sub_set_size=412, batch_size=25
 
-    num_segments = calculate_num_segments(sample_length)
-
     while 1:
-        # load subset
-        x_train_sub = np.zeros((subset_size * num_segments, sample_length, 1))
-        y_train_sub = np.zeros((subset_size, num_tags))
+
+        num_segments = None
+        x_train_sub = None
+        y_train_sub = None
 
         for subset_size_index in range(0, subset_size):
             '''	
@@ -52,6 +52,11 @@ def train_generator(train_list, y_train_init, batch_size, song_batch, sample_len
                 tmp = np.load(path % (dataset, train_list[subset_size_index * song_batch + i]))['arr_0']
             except:
                 break
+                # load subset
+
+            num_segments = calculate_num_segments(len(tmp), sample_length)
+            x_train_sub = np.zeros((subset_size * num_segments, sample_length, 1))
+            y_train_sub = np.zeros((subset_size, num_tags))
 
             for num_segments_index in range(0, num_segments):
                 x_train_sub[num_segments * subset_size_index + num_segments_index, :, 0] = \
@@ -98,6 +103,7 @@ def train_generator(train_list, y_train_init, batch_size, song_batch, sample_len
         i = i + 1
         if i == song_batch:
             i = 0
+
 
 def get_data(args):
     """Split data into train and test"""
@@ -163,19 +169,30 @@ def load_multigpu_checkpoint_weights(model, h5py_file):
     with h5py.File(h5py_file, "r") as file:
         model_name = None
         for key in file.keys():
+            print(key)
             if 'model' in key:
                 model_name = key
 
         # Get model subset in file - other layers are empty
         weight_file = file[model_name]
+        mixed_layer = []
+        for key in weight_file.keys():
+            print(key)
+            if 'mixed' in key:
+                mixed_layer.append(key)
 
+        mixed = 0
         for layer in model.layers:
+            if 'mixed' in layer.name:
+                try:
+                    layer_weights = weight_file[mixed_layer[mixed]]
+                    mixed += 1
 
-            try:
-                layer_weights = weight_file[layer.name]
-
-            except:
-                # No weights saved for layer
+                except:
+                    print('could find mixed')
+                    # No weights saved for layer
+                    continue
+            else:
                 continue
 
             try:
@@ -206,7 +223,7 @@ def check_weights(build_model, file):
     weights9 = build_model.layers[39].get_weights()
 
     print("%s, %s, %s, %s, %s, %s, %s, %s, %s" % (weights, weights2, weights3, weights4, weights5,
-                                                      weights6, weights7, weights8, weights9))
+                                                  weights6, weights7, weights8, weights9))
 
 
 def check_weight(build_model, file):
@@ -214,6 +231,3 @@ def check_weight(build_model, file):
     weights = build_model.layers[7].get_weights()
 
     print("%s" % (weights))
-
-
-

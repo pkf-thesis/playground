@@ -81,7 +81,7 @@ class BaseModel(ABC):
             optimizer=keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True),
             metrics=['accuracy'])
 
-        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 25, self.dimension[0], self.n_labels,
+        train_gen = utils.train_generator(train_x, train_y, self.batch_size, 50, self.dimension[0], self.n_labels,
                                           self.dataset, self.path)
 
         val_gen = DataGenerator(self.transform_data, valid_x, valid_y, batch_size=self.batch_size, n_channels=1,
@@ -95,7 +95,7 @@ class BaseModel(ABC):
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=len(train_x) // self.batch_size * utils.calculate_num_segments(self.dimension[0]),
+            steps_per_epoch=len(train_x) // self.batch_size * utils.calculate_num_segments(640512, self.dimension[0]),
             # steps_per_epoch=10, # Used for testing
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
@@ -144,7 +144,7 @@ class BaseModel(ABC):
         history = train_model.fit_generator(
             train_gen,
             callbacks=self.callbacks,
-            steps_per_epoch=len(train_x) // self.batch_size * utils.calculate_num_segments(self.dimension[0]),
+            steps_per_epoch=len(train_x) // self.batch_size * utils.calculate_num_segments(640512, self.dimension[0]),
             validation_data=val_gen,
             validation_steps=len(valid_x) // self.batch_size,
             epochs=epoch_size,
