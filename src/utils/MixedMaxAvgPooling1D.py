@@ -26,10 +26,12 @@ class MixedMaxAvgPooling1D(Layer):
         if self.alpha is None:
             if 'region' not in self.method:
                 self.alpha = self.add_weight(name=self.name, shape=(1,),
-                                             initializer=RandomUniform(minval=0.0, maxval=1.0))
+                                             initializer=RandomUniform(minval=0.0, maxval=1.0),
+                                             constraint=lambda t: tf.clip_by_value(t, 0, 1))
             else:
                 self.alpha = self.add_weight(name=self.name, shape=(int(self.input_dim/3), 1),
-                                             initializer=RandomUniform(minval=0.0, maxval=1.0))
+                                             initializer=RandomUniform(minval=0.0, maxval=1.0),
+                                             constraint=lambda t: tf.clip_by_value(t, 0, 1))
         super(MixedMaxAvgPooling1D, self).build(input_shape)  # Be sure to call this at the end
 
     def call(self, inputs):
