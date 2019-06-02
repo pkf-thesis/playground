@@ -51,8 +51,8 @@ def make_confusion_matrix(predictions, truths):
         truth = truths[index]
         norm_prediction = prediction / sum(prediction)
         norm_truth = truth / sum(truth)
-        pred_matrix = np.repeat(norm_prediction.reshape((-1, 1)), n_labels, axis=1)
-        truth_matrix = np.repeat(np.array([norm_truth]), n_labels, axis=0)
+        pred_matrix = np.repeat(np.array([norm_prediction]), n_labels, axis=0)
+        truth_matrix = np.repeat(norm_truth.reshape((-1, 1)), n_labels, axis=1)
         cm_temp = pred_matrix * truth_matrix
         cm = np.add(cm_temp, cm)
     norm_cm = cm/cm.sum(axis=0, keepdims=1)
@@ -126,14 +126,14 @@ def plot_confusion_matrix(predictions, truths, target_names, title='Confusion ma
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.savefig("confusion_matrix.png", bbox_inches="tight")
 
-# Group: 0 = all, 1 = genre, 2 = instrumental, 3 = mood, 4 = gender, 5 = other
+# Group: 0:all - 1:genre - 2:instrumental - 3:gender - 4:vocal - 5:other - 6:all
 def plot_confusion_matrix2(predictions, truths, labels, group=0):
-    genre_ids = [6, 11, 1, 3, 48, 7, 38, 16, 17, 29, 34, 37, 46]
-    instrumental_ids = [0, 9, 22, 4, 5, 12, 14, 25, 42, 31, 43]
-    mood_ids = [2, 10, 24, 30, 8, 23, 45]
+    genre_ids = [3, 6, 11, 14, 38,10, 37, 16, 17, 29,48, 7, 46, 1, 34]
+    instrumental_ids = [0, 9, 22, 4, 5, 12, 25, 42, 31, 43]
     gender_ids = [18, 27, 33, 39, 15, 26, 40, 47]
-    other_ids = [35, 49, 13, 19, 20, 36, 32, 41, 21, 28, 44]
-
+    vocal_ids = [13, 19, 20, 36, 21, 28, 44]
+    other_ids = [45,32, 41,35, 49, 2, 24, 30, 8, 23]
+        
     cm = make_confusion_matrix(truths, predictions)
 
     if group == 1:
@@ -143,23 +143,27 @@ def plot_confusion_matrix2(predictions, truths, labels, group=0):
         labels = np.take(labels, instrumental_ids)
         cm = np.take(cm[instrumental_ids], instrumental_ids, 1)
     if group == 3:
-        labels = np.take(labels, mood_ids)
-        cm = np.take(cm[mood_ids], mood_ids, 1)
-    if group == 4:
         labels = np.take(labels, gender_ids)
         cm = np.take(cm[gender_ids], gender_ids, 1)
+    if group == 4:
+        labels = np.take(labels, vocal_ids)
+        cm = np.take(cm[vocal_ids], vocal_ids, 1)
     if group == 5:
         labels = np.take(labels, other_ids)
         cm = np.take(cm[other_ids], other_ids, 1)
     if group == 6:
-        all_ids = genre_ids + instrumental_ids + mood_ids + gender_ids + other_ids
+        all_ids = genre_ids + instrumental_ids + gender_ids + vocal_ids + other_ids
         labels = np.take(labels, all_ids)
         cm = np.take(cm[all_ids], all_ids, 1)
-
+    print(labels)
     df_cm = pd.DataFrame(cm, index=[i for i in labels],
                          columns=[i for i in labels])
     # plt.figure(figsize=(10, 7))
-    sn.set(font_scale=1)
+    sn.set(font_scale=0.4)
     #sn.palplot(sn.color_palette("Blues"))
     sn.heatmap(df_cm)
+    
+    #add grey grid
+    #plt.pcolormesh(df_cm, edgecolors='grey', linewidth=1)
+    
     plt.show()
